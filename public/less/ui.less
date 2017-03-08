@@ -1,0 +1,142 @@
+// main: main.less
+// ==== GLOBAL ====
+button {
+    border: none;
+    background-color: transparent;
+    outline: 0;
+}
+
+
+// ==== CANVAS =====
+.cavasWrapper {
+    .canvas-btn {
+        display: block;
+        position: absolute;
+        top: 5px;
+        right: 20px;
+        font-size: 20px;
+        line-height: 1;
+        padding: 6px;
+        background-color: rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+        color: white;
+        z-index: 20;
+
+
+        &:before {
+            font-family: FontAwesome;
+            content: "\f1de";
+        }
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            font-size: 22px;
+            padding: 5px;
+        }
+    }
+    .settings-panel {
+        &.active { display: block;}
+
+        display: none;
+        box-shadow: 1px 1px 3px grey, -1px 1px 3px grey, 1px -1px 3px grey, -1px -1px 3px grey;
+        position: absolute;
+        top: 5px;
+        right: 20px;
+        z-index: 19;
+        padding: 20px 10px;
+        background-color: rgba(255,255,255,0.9);
+
+        .settings-row {
+            display: block;
+            width: 300px;
+            margin-bottom: 40px;
+            position: relative;
+
+            &:after {
+                display: table;
+                content:"";
+                clear: both;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0;
+            }
+
+            input {
+                display: block;
+                width: 200px;
+                float: left;
+            }
+            .result {
+                float: left;
+                display: block;
+                width: 100px;
+                text-align: center;
+                line-height: 0;
+                margin-top: 7px;
+
+                &:after {
+                    content:"\f111";
+                    font-family: FontAwesome;
+                }
+            }
+        }
+        .brush-color .result {
+            font-size: 60px;
+            text-shadow: 0 0 10px #565656;
+        }
+    }
+}
+#canvas {
+    border:1px solid #000000;
+    display: block;
+    height: 500px;
+    width: 100%;
+}
+
+// ==== Chat COLUMN ====
+#chatColumn {
+
+    &:after {
+        display: table;
+        content: "";
+        clear: both;
+    }
+
+    .messages {
+        border: 1px solid red;
+        width: 100%;
+        display: block;
+        height: 500px;
+        margin: 0 0 10px 0;
+        resize: none;
+        overflow: hidden;
+        outline: 0;
+        position: relative;
+
+        p {
+            display: block;
+            margin: 0;
+            padding-bottom: 5px;
+        }
+
+        .chatWelcome {
+            text-align: center;
+            font-style: italic;
+            color: #5b5b5b;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 16px;
+        }
+    }
+    input,
+    textarea {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+    button[type="submit"] {
+        float: right;
+    }
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Pictionary</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="./css/styles.css" rel="stylesheet" />
+
+  </head>
+  <body class="container">
+      <header class="row">
+          <h1 class="text-center">Pictionary</h1>
+      </header>
+
+      <!-- content -->
+      <div class="row">
+
+          <!-- CANVAS -->
+          <div class="col-sm-8 col-md-9">
+              <div class="cavasWrapper">
+                    <button type="button" class="canvas-btn"></button>
+                    <div class="settings-panel">
+                        <div class="settings-row brush-size">
+                            <label>Brush Size</label>
+                            <input type="range" name="size" min="1" max="100" step="1" value="30"/>
+                            <div class="result"></div>
+                        </div>
+                        <div class="settings-row brush-color">
+                            <label>Color</label>
+                            <input type="range" name="color" min="1" max="320" step="1" value="200"/>
+                            <div class="result"></div>
+                        </div>
+                    </div>
+                    <canvas id="canvas"></canvas>
+              </div>
+
+          </div>
+
+          <!-- CHAT COLUMN -->
+          <div class="col-sm-4 col-md-3" id="chatColumn">
+              <div class="messages" readonly></div>
+              <form>
+                  <input type="text" name="username" placeholder="Username" />
+                  <textarea type="text" name="chatInput" placeholder="Chat with friends..."></textarea>
+                  <button type="submit" >Submit <i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+              </form>
+          </div>
+      </div>
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/ui.js"></script>
+  </body>
+</html>
