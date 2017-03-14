@@ -1,13 +1,5 @@
 // main: main.less
-// ==== GLOBAL ====
-button {
-    border: none;
-    background-color: transparent;
-    outline: 0;
-}
 
-
-// ==== CANVAS =====
 .cavasWrapper {
     .canvas-btn {
         display: block;
@@ -93,50 +85,4 @@ button {
     display: block;
     height: 500px;
     width: 100%;
-}
-
-// ==== Chat COLUMN ====
-#chatColumn {
-
-    &:after {
-        display: table;
-        content: "";
-        clear: both;
-    }
-
-    .messages {
-        border: 1px solid red;
-        width: 100%;
-        display: block;
-        height: 500px;
-        margin: 0 0 10px 0;
-        resize: none;
-        overflow: hidden;
-        outline: 0;
-        position: relative;
-
-        p {
-            display: block;
-            margin: 0;
-            padding-bottom: 5px;
-        }
-
-        .chatWelcome {
-            text-align: center;
-            font-style: italic;
-            color: #5b5b5b;
-            font-weight: bold;
-            letter-spacing: 1px;
-            font-size: 16px;
-        }
-    }
-    input,
-    textarea {
-        display: block;
-        width: 100%;
-        margin: 5px 0;
-    }
-    button[type="submit"] {
-        float: right;
-    }
 }
