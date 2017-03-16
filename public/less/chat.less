@@ -1,0 +1,51 @@
+// main: main.less
+
+#chatColumn {
+
+    &:after {
+        display: table;
+        content: "";
+        clear: both;
+    }
+
+    .messages {
+        border: 1px solid red;
+        width: 100%;
+        display: block;
+        height: 500px;
+        margin: 0 0 10px 0;
+        resize: none;
+        overflow: hidden;
+        outline: 0;
+        position: relative;
+
+        p {
+            display: block;
+            margin: 0;
+            padding-bottom: 5px;
+
+            .username {
+                font-weight: bold;
+            }
+            .user-message {}
+        }
+
+        .chatWelcome {
+            text-align: center;
+            font-style: italic;
+            color: #5b5b5b;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 16px;
+        }
+    }
+    input,
+    textarea {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+    button[type="submit"] {
+        float: right;
+    }
+}
