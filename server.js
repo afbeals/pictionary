@@ -7,15 +7,18 @@ app.get('/',function(req,res){
 });
 var server = app.listen(8000,function(){
 	console.log("listening on port 8000");
-	
+
 });
 var io = require('socket.io').listen(server);
 
 // socket.io https://github.com/socketio/socket.io/blob/master/docs/README.md
 io.sockets.on('connection',function(socket){
+
+	console.log('Connected!');
+
 	//once a connection with certain name:
-	socket.on('name_of_connection from client', function(data){
-		
+	socket.on('chatUpdate', function(data){
+		socket.broadcast.emit('chatUpdate', data);
 	});
 
 	//send back to all connected clients
@@ -23,5 +26,8 @@ io.sockets.on('connection',function(socket){
 
 	//send back to everyone except newly connected
 	socket.broadcast.emit("identifier_for_message", {});
+
+	// socket disconect
+	socket.on('disconnect',function(){ console.log('Disconnect.. :(') })
 
 });
