@@ -16,7 +16,7 @@ io.sockets.on('connection',function(socket){
 
 	console.log('Connected!');
 
-	//once a connection with certain name:
+	//update chat:
 	socket.on('chatUpdate', function(data){
 		socket.broadcast.emit('chatUpdate', data);
 	});

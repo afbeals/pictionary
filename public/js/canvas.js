@@ -17,16 +17,22 @@
     var isDrawing = false;
     var lastX = 0;
     var lastY = 0;
+    var ctxPackage = {};
 
     function draw(e) {
         if (!isDrawing) return;
         ctx.beginPath();
         ctx.lineCap = 'round';
         ctx.moveTo(lastX, lastY);
+        ctxPackage[moveToX] = lastX;
+        ctxPackage[moveToY] = lastY; 
         ctx.lineTo(e.offsetX, e.offsetY);
+        ctxPackage[lineToX] = e.offsetX;
+        ctxPackage[moveToY] = e.offsetY; 
         ctx.stroke();
         lastX = e.offsetX;
         lastY = e.offsetY;
+        socket.emit('isDrawing',JSON.stringify(ctxPackage));
     }
 
     canvas.addEventListener('mousemove', draw)
