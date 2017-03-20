@@ -16,10 +16,18 @@ io.sockets.on('connection',function(socket){
 
 	console.log('Connected!');
 
-	//update chat:
+	//once a connection with certain name:
 	socket.on('chatUpdate', function(data){
 		socket.broadcast.emit('chatUpdate', data);
 	});
+
+	socket.on('playerDrawing',function(package){
+		socket.broadcast.emit('playerStartedDrawing',package);
+	});
+
+	socket.on('stopDrawing',function(){
+		socket.broadcast.emit('playerStopDrawing');
+	})
 
 	//send back to all connected clients
 	socket.emit("identifier_for_message", {})

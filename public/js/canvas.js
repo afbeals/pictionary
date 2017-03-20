@@ -17,6 +17,8 @@
     var isDrawing = false;
     var lastX = 0;
     var lastY = 0;
+    var playerLastX = -100;
+    var playerLastY = -100;
     var ctxPackage = {};
 
     function draw(e) {
@@ -24,15 +26,15 @@
         ctx.beginPath();
         ctx.lineCap = 'round';
         ctx.moveTo(lastX, lastY);
-        ctxPackage[moveToX] = lastX;
-        ctxPackage[moveToY] = lastY; 
         ctx.lineTo(e.offsetX, e.offsetY);
-        ctxPackage[lineToX] = e.offsetX;
-        ctxPackage[moveToY] = e.offsetY; 
         ctx.stroke();
         lastX = e.offsetX;
         lastY = e.offsetY;
-        socket.emit('isDrawing',JSON.stringify(ctxPackage));
+        ctxPackage['offsetX'] = e.offsetX;
+        ctxPackage['offsetY'] = e.offsetY;
+        ctxPackage['lastX'] = e.offsetX;
+        ctxPackage['lastY'] = e.offsetY;
+        socket.emit('playerDrawing', ctxPackage);
     }
 
     canvas.addEventListener('mousemove', draw)
@@ -40,7 +42,9 @@
         isDrawing = true;
         lastX = e.offsetX;
         lastY = e.offsetY;
-
+        ctxPackage['lastX'] = lastX;
+        ctxPackage['lastY'] = lastY;
+        console.log(e);
         if (canvasSettingsPanel.classList.contains('active')) {
             canvasSettingsPanel.classList.remove('active');
         }
@@ -79,12 +83,14 @@
 
     colorResult.style.color = `hsl(${colorSlider.value}, 100%, 50%)`;
     ctx.strokeStyle = `hsl(${colorSlider.value}, 100%, 50%)`;
+    ctxPackage['strokeStyle'] = `hsl(${colorSlider.value}, 100%, 50%)`;
 
     function updateBrushColor(){
         if (!mouseDown) return;
         const color = this.value
         colorResult.style.color = `hsl(${color}, 100%, 50%)`;
         ctx.strokeStyle = `hsl(${color}, 100%, 50%)`;
+        ctxPackage['strokeStyle'] = `hsl(${color}, 100%, 50%)`;
     }
 
     colorSlider.addEventListener('change', updateBrushColor);
@@ -101,5 +107,21 @@
             canvasSettingsPanel.classList.add('active');
         }
     }
+
+    // == Socket IO
+
+    socket.on('playerStartedDrawing',function(ctxServerpackage){
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = ctxServerpackage.strokeStyle;
+        if(playerLastX != ctxServerpackage.offsetX){playerLastX = ctxServerpackage.offsetX};
+        if(playerLastY != ctxServerpackage.offsetY){playerLastY = ctxServerpackage.offsetY};
+        ctx.moveTo(playerLastX, playerLastY);
+        ctx.lineTo(ctxServerpackage.offsetX, ctxServerpackage.offsetY);
+        ctx.stroke();
+        playerLastX = ctxServerpackage.offsetX;
+        playerLastY = ctxServerpackage.offsetY;
+
+    });
 
 }()) // end iife wrapper
