@@ -30,10 +30,10 @@
         ctx.stroke();
         lastX = e.offsetX;
         lastY = e.offsetY;
-        ctxPackage['offsetX'] = e.offsetX;
-        ctxPackage['offsetY'] = e.offsetY;
-        ctxPackage['lastX'] = e.offsetX;
-        ctxPackage['lastY'] = e.offsetY;
+        ctxPackage['offsetX'] = e.offsetX / canvas.width;
+        ctxPackage['offsetY'] = e.offsetY / canvas.height;
+        ctxPackage['lastX'] = e.offsetX / canvas.width;
+        ctxPackage['lastY'] = e.offsetY  / canvas.height;
         socket.emit('playerDrawing', ctxPackage);
     }
 
@@ -42,9 +42,6 @@
         isDrawing = true;
         lastX = e.offsetX;
         lastY = e.offsetY;
-        ctxPackage['lastX'] = lastX;
-        ctxPackage['lastY'] = lastY;
-        console.log(e);
         if (canvasSettingsPanel.classList.contains('active')) {
             canvasSettingsPanel.classList.remove('active');
         }
@@ -72,6 +69,7 @@
         if (!mouseDown) return;
         sizeResult.style.fontSize = this.value+'px';
         ctx.lineWidth = this.value;
+        ctxPackage['lineWidth'] = sizeSlider.value;
     }
 
     sizeSlider.addEventListener('change', updateBrushSize);
@@ -83,7 +81,6 @@
 
     colorResult.style.color = `hsl(${colorSlider.value}, 100%, 50%)`;
     ctx.strokeStyle = `hsl(${colorSlider.value}, 100%, 50%)`;
-    ctxPackage['strokeStyle'] = `hsl(${colorSlider.value}, 100%, 50%)`;
 
     function updateBrushColor(){
         if (!mouseDown) return;
@@ -116,8 +113,9 @@
         ctx.strokeStyle = ctxServerpackage.strokeStyle;
         if(playerLastX != ctxServerpackage.offsetX){playerLastX = ctxServerpackage.offsetX};
         if(playerLastY != ctxServerpackage.offsetY){playerLastY = ctxServerpackage.offsetY};
-        ctx.moveTo(playerLastX, playerLastY);
-        ctx.lineTo(ctxServerpackage.offsetX, ctxServerpackage.offsetY);
+        ctx.moveTo(playerLastX * canvas.width, playerLastY * canvas.height);
+        ctx.lineTo(ctxServerpackage.offsetX * canvas.width, ctxServerpackage.offsetY * canvas.height);
+        ctx.lineWidth = ctxServerpackage.lineWidth;
         ctx.stroke();
         playerLastX = ctxServerpackage.offsetX;
         playerLastY = ctxServerpackage.offsetY;
