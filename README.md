@@ -12,7 +12,6 @@ To Do:
     Ability to join rooms specific room
     (Future) Ability to join random room
   -Canvas:
-    Calculate width
     Redo color picker
     Redo size picker
   -Game:
