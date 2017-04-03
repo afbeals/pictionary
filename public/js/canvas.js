@@ -39,12 +39,12 @@
 
     canvas.addEventListener('mousemove', draw)
     canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        lastX = e.offsetX;
-        lastY = e.offsetY;
-        if (canvasSettingsPanel.classList.contains('active')) {
-            canvasSettingsPanel.classList.remove('active');
-        }
+        player.draw ? (
+                        isDrawing = true, 
+                        lastX = e.offsetX,
+                        lastY = e.offsetY,
+                        (canvasSettingsPanel.classList.contains('active')) ? canvasSettingsPanel.classList.remove('active') : null
+                        ): isDrawing = false
     });
     canvas.addEventListener('mouseup', () => isDrawing = false);
     canvas.addEventListener('mouseout', () => isDrawing = false);

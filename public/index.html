@@ -40,7 +40,11 @@
                     </div>
                     <canvas id="canvas"></canvas>
               </div>
-
+              <div id="guessWrapper">
+                <div class="cardWrapper">
+                  <div class="card">test</div>
+                </div>
+              </div>
           </div>
 
           <!-- CHAT COLUMN -->
@@ -63,8 +67,26 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>var socket = io();</script>
 
-    <!-- ui/ux stuffs -->
+    <!-- game interface -->
+    <script src="js/game.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/chat.js"></script>
+    
   </body>
 </html>
+
+<style>
+#guessWrapper .cardWrapper{
+  margin: 5px;
+  display: inline-block;
+}
+#guessWrapper .cardWrapper .card{
+    background: red;
+    display: inline-block;
+    padding: 10px 15px;
+    color: white;
+    text-transform: uppercase;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+</style>
