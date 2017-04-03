@@ -15,8 +15,8 @@ To Do:
     Redo color picker
     Redo size picker
   -Game:
-    only allow drawer to use canvas
-    store user info
+    only allow drawer to use canvas(server side code)
+    store user info(server side code)
     store game info ( points, guesses, etc)
     (future) team based
     Timer (will lockout after time is up)
