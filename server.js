@@ -9,15 +9,21 @@ var server = app.listen(8000,function(){
 	console.log("listening on port 8000");
 
 });
+
+
+// ==== socket.io ====
+// https://github.com/socketio/socket.io/blob/master/docs/README.md
 var io = require('socket.io').listen(server);
-
-// socket.io https://github.com/socketio/socket.io/blob/master/docs/README.md
+var chatHistory = '';
 io.sockets.on('connection',function(socket){
-
 	console.log('Connected!');
+
+	// emit.setup will transfer chatHistory and any setup data for newcomers
+	socket.emit('setup', {"chatHistory":chatHistory});
 
 	//once a connection with certain name:
 	socket.on('chatUpdate', function(data){
+		chatHistory = data.currentChat; // maintain server-side copy of chat for newcomers
 		socket.broadcast.emit('chatUpdate', data);
 	});
 
@@ -36,6 +42,10 @@ io.sockets.on('connection',function(socket){
 	socket.broadcast.emit("identifier_for_message", {});
 
 	// socket disconect
-	socket.on('disconnect',function(){ console.log('Disconnect.. :(') })
+	socket.on('disconnect',function(){
+		// show others that user has left
+		console.log('LEFT!')
+		socket.emit('userDC', {"msg": 'User has left the game.'});
+	})
 
 });
