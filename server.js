@@ -20,6 +20,8 @@ io.sockets.on('connection',function(socket){
 
 	// emit.setup will transfer chatHistory and any setup data for newcomers
 	socket.emit('setup', {"chatHistory":chatHistory});
+	//broadcast to all to update
+	//socket.broadcast('setupGame');
 
 	//once a connection with certain name:
 	socket.on('chatUpdate', function(data){
@@ -33,8 +35,14 @@ io.sockets.on('connection',function(socket){
 
 	socket.on('stopDrawing',function(){
 		socket.broadcast.emit('playerStopDrawing');
+	});
+
+	//when receive startgame choose who is drawer
+	socket.on('startGame',() => {
+
 	})
 
+// == Helpers 
 	//send back to all connected clients
 	socket.emit("identifier_for_message", {})
 

@@ -23,6 +23,7 @@ const game = {
 let tableString = "";
 let deck;
 let createTable;
+let chooseCard;
 let getDeck;
 let card;
 
@@ -32,7 +33,7 @@ createTable = (cards) => {
 	cards.forEach((e, i) => {
 	    tableString +=`<div class="cardWrapper"><div class="card">${e}</div></div>`
 	});
-	table.innerHTML = table;
+	table.innerHTML = tableString;
 } 
 
 chooseCard = (min,max) => {
@@ -58,20 +59,22 @@ socket.on('receiveDeck',(data) => {
 
 
 
-//player interactions
+// = player interactions
 //sever emit once a player joins to increase game.players
+socket.emit('setup', () => {
+	game.totalPlayers++;
+});
 
 //select player
 //recieve information that client is drawer
-const startButton = document.getEleemntByClassId('startGame');
+const startButton = document.getElementById('startGame');
 startButton.addEventListener('click', (e) => {
 	game.readyPlayers++;
 	//run function that disables start button
-
+	this.classList.add("disabled");
 	//once players ready match total players start the game
 	if(game.readyPlayers == game.totalPlayers){
 		//select player
-		
 		socket.emit('startGame');
 	}
 	
@@ -87,17 +90,9 @@ socket.on('playerSelected',(gameInfo) => {
 		getDeck(0,4);
 		chooseCard(0,getDeck.length - 1);
 	}
-})
-const cardSelected = document.getEleemntByClassName('card');
-cardSelected.addEventListener('click', (e) => {
-	//fire modal , mark as possible, mark as eliminated, mark as final
-
-	//possible > change bg to yellow
-
-	//elim > change bg to red, opacity lower
-
-	//final > change to green, mark all others as elim, set player guess to this card
 });
+
+
 
 //
 
@@ -109,6 +104,20 @@ function setDrawer(){
 }
 
 setDrawer();
-cards = ['box','dress','karina'];
+let cards = ['box','dress','karina'];
 createTable(cards);
+const cardSelected = document.getElementsByClassName('card');
+
+for(let x = 0;x<cardSelected.length;++x){
+	cardSelected[x].addEventListener('click', (e) => {
+		//fire modal , mark as possible, mark as eliminated, mark as final
+
+		//possible > change bg to yellow
+
+		//elim > change bg to red, opacity lower
+
+		//final > change to green, mark all others as elim, set player guess to this card
+	});
+}
+
 
