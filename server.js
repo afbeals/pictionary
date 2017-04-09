@@ -16,8 +16,30 @@ var server = app.listen(8000,function(){
 var io = require('socket.io').listen(server);
 var chatHistory = '';
 io.sockets.on('connection',function(socket){
-	console.log('Connected!');
+//starting game
+	//on connect, should emit to client to fire modal instead
+	socket.emit('selectRoom');
+	//upon selection of join a room
+	socket.on('joinRoom',(roomName)=>{
+		//join room
+		socket.join(roomName);
+		//fire any game joining functions needed client
+		socket.emit('roomJoined',roomName);
+		//update game object for all in room
+		io.in(roomName).emit('getPlayers', 'object');
+	});
+	//upon selection of create a room
+	socket.on('createRoom', (roomName) => {
+		//create room
+		socket.join(roomName);
+		//fire any game creation functions needed to client
+		socket.emit('roomCreated',roomName);
+		//update game object for all in room;
+		io.in(roomName).emit('getPlayers', 'object');
+	});
 
+
+//------------------------------------------------------------------------------------------
 	// emit.setup will transfer chatHistory and any setup data for newcomers
 	socket.emit('setup', {"chatHistory":chatHistory});
 	//broadcast to all to update
@@ -40,10 +62,15 @@ io.sockets.on('connection',function(socket){
 	//when receive startgame choose who is drawer
 	socket.on('startGame',() => {
 
+	});
+
+	socket.on('test',(roomName)=>{
+		socket.join(roomName);
+		io.in(roomName).emit('messageName', 'object');
 	})
 
 // == Helpers 
-	//send back to all connected clients
+	//send back to connected clients
 	socket.emit("identifier_for_message", {})
 
 	//send back to everyone except newly connected

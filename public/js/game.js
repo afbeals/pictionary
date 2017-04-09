@@ -1,23 +1,34 @@
 'use strict'
 // == variables
 //on connection create player from class constructor
-class player{
+class Player{
 	constructor(){
-		this.name = name;
-		this.number = number;
+		this.name = '';
+		//this.number = number;
 		this.guess = "";
 		this.score = 0;
 		this.hasDrawn = false;
 		this.draw = false;
+		this.roomName = "";
 	}
+
+	score () {
+		return `${this.name} curent has a score of ${this.score}`;
+    }
+	
+	guess () {
+		return `${this.name} guessed ${this.guess}`;
+    }
+
 }
 const table = document.getElementById('guessWrapper');
 const game = {
 				score : 0,
-				totalPlayers: 0,
-				readyPlayers: 0,
+				//totalPlayers: 0,
+				//readyPlayers: 0,
+				players : [],
 				cardAn: '',
-				deck : ''
+				deck : '';
 			}
 
 let tableString = "";
@@ -103,7 +114,7 @@ function setDrawer(){
     console.log('you may draw now');
 }
 
-setDrawer();
+//setDrawer();
 let cards = ['box','dress','karina'];
 createTable(cards);
 const cardSelected = document.getElementsByClassName('card');
@@ -120,4 +131,52 @@ for(let x = 0;x<cardSelected.length;++x){
 	});
 }
 
+socket.on('selectRoom', ()=>{
+	//fire modal
 
+});
+
+//simu
+let button = document.getElementById('startGame');
+button.addEventListener('click', (e) =>{
+	let roomName = document.getElementById('createRoom').value;
+	console.log('ran')
+	socket.emit('test',roomName);
+
+})
+socket.on('messageName',(message)=>{
+	console.log(message);
+})
+//
+
+
+let CRButton = document.getElementById('createButton');
+CRButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementById('createRoom').value;
+	let playerName = document.getElementById('playerName').value;
+	const player = new Player();
+	player.name = playerName;
+	player.roomName = roomName;
+	socket.emit('createRoom',roomName);
+})
+socket.on('roomCreated', () => {
+
+});
+
+let JRButton = document.getElementById('joinButton');
+JRButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementById('joinRoom').value;
+	let playerName = document.getElementById('playerName').value;
+	const player = new Player();
+	player.name = playerName;
+	player.roomName = roomName;
+	socket.emit('joinRoom',roomName);
+})
+
+socket.on('roomJoined',(roomName) => {
+	console.log(roomName,' joined');
+});
+
+socket.on('roomCreated',(roomName) => {
+	console.log(roomName,' created');
+});
