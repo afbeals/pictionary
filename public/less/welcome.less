@@ -1,0 +1,93 @@
+// main: main.less
+
+.intro {
+    h1 {
+        text-align: center;
+        margin-top: 100px;
+    }
+    h3 {
+        text-align: center;
+    }
+
+    .action-box {
+        max-width: 800px;
+        margin: 10px auto;
+        padding: 30px 45px;
+
+        input.username {
+            display: block;
+            margin: 0 0 25px 0;
+            width: 100%;
+            font-size: 24px;
+            text-align: center;
+        }
+        .left {
+            float: left;
+            width: 50%;
+            display: block;
+            border-right: 1px solid grey;
+            padding-right: 45px;
+        }
+        .right {
+            float: right;
+            width: 50%;
+            display: block;
+            position: relative;
+            padding-left: 45px;
+
+            &:before {
+                content: "OR";
+                display: block;
+                height: 55px;
+                width: 55px;
+                font-size: 26px;
+                color: #FB4D3D;
+                background-color: #fff;
+                position: absolute;
+                top: 50px;
+                left: -27px;
+                border-radius: 100px;
+                line-height: 53px;
+                border: 1px solid grey;
+            }
+        }
+        > div {
+            text-align: center;
+            padding: 3px;
+
+            p {
+                font-size: 26px;
+                text-align: center;
+            }
+            input {
+                display: block;
+                width: 100%;
+                font-size: 24px;
+                text-align: center;
+            }
+            button {
+                display: block;
+                width: 100%;
+                margin: 20px auto 0;
+                background-color: #1eb91e;
+                color: white;
+                font-size: 22px;
+                line-height: 1;
+                padding: 15px;
+
+                border-radius: 5px;
+                transition: linear 0.15s;
+                box-shadow: 0 0 15px #868686;
+
+                &:hover,
+                &:focus {
+                    box-shadow: 0 0 0 transparent;
+                    text-shadow: 1px 1px 1px black;
+                    background-color: #158315;
+                }
+
+            }
+        }
+    }
+
+}

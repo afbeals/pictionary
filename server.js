@@ -21,7 +21,7 @@ io.sockets.on('connection',function(socket){
 	// emit.setup will transfer chatHistory and any setup data for newcomers
 	socket.emit('setup', {"chatHistory":chatHistory});
 
-	//once a connection with certain name:
+	// once a connection with certain name:
 	socket.on('chatUpdate', function(data){
 		chatHistory = data.currentChat; // maintain server-side copy of chat for newcomers
 		socket.broadcast.emit('chatUpdate', data);

@@ -17,68 +17,60 @@
   <!-- connect to socket io -->
   <script></script>
 
-  <body class="container">
-      <header class="row">
-          <h1 class="text-center">Pictionary</h1>
-      </header>
+    <body class="container">
+        <div class="row intro">
+            <h1>Pictionary</h1>
+            <h3>A real-time, multiplayer, pictionary game</h3>
+
+            <div class="action-box clearfix">
+                <input name="username" type="text" class="username" placeholder="Create your username!" />
+                <div class="left">
+                    <p>Start a new game!</p>
+                    <input name="bunk" type="text" class="invisible" />
+                    <button type="button" class="new-game">New Game</button>
+                </div>
+                <div class="right">
+                    <p>Join an existing game!</p>
+                    <input name="gameId" type="text" placeholder="Enter Game ID"/>
+                    <button type="button" class="join-game">Join Game</button>
+                </div>
+            </div>
+        </div>
 
       <!-- content -->
-      <div class="row">
+          <div class="row stage">
+              <h1>Pictionary</h1>
+              <!-- CANVAS -->
+              <div class="col-sm-8 col-md-9">
+                  <div class="cavasWrapper">
+                        <button type="button" class="canvas-btn"></button>
+                        <div class="settings-panel">
+                            <div class="settings-row brush-size">
+                                <label>Brush Size</label>
+                                <input type="range" name="size" min="1" max="100" step="1" value="30"/>
+                                <div class="result"></div>
+                            </div>
+                            <div class="settings-row brush-color">
+                                <label>Color</label>
+                                <input type="range" name="color" min="1" max="320" step="1" value="200"/>
+                                <div class="result"></div>
+                            </div>
+                        </div>
+                        <canvas id="canvas"></canvas>
+                  </div>
 
-          <!-- CANVAS -->
-          <div class="col-sm-8 col-md-9">
-              <div class="cavasWrapper">
-                    <button type="button" class="canvas-btn"></button>
-                    <div class="settings-panel">
-                        <div class="settings-row brush-size">
-                            <label>Brush Size</label>
-                            <input type="range" name="size" min="1" max="100" step="1" value="30"/>
-                            <div class="result"></div>
-                        </div>
-                        <div class="settings-row brush-color">
-                            <label>Color</label>
-                            <input type="range" name="color" min="1" max="320" step="1" value="200"/>
-                            <div class="result"></div>
-                        </div>
-                    </div>
-                    <canvas id="canvas"></canvas>
               </div>
 
-          </div>
-
-          <!-- CHAT COLUMN -->
-          <div class="col-sm-4 col-md-3" id="chatColumn">
-              <div class="messages" readonly></div>
-              <form>
-                  <input type="text" name="username" placeholder="Username" />
-                  <textarea type="text" name="chatInput" placeholder="Chat with friends..."></textarea>
-                  <button type="submit" >Submit <i class="fa fa-arrow-up" aria-hidden="true"></i></button>
-              </form>
+              <!-- CHAT COLUMN -->
+              <div class="col-sm-4 col-md-3" id="chatColumn">
+                  <div class="messages" readonly></div>
+                  <form>
+                      <textarea type="text" name="chatInput" placeholder="Chat with friends..."></textarea>
+                      <button type="button" >Submit <i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+                  </form>
+              </div>
           </div>
       </div>
-
-      <!-- modal -->
-    <div id="modalBox" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Modal title</h4>
-                </div>
-                <div class="modal-body row">
-                    <form name="signin">
-                        <label for="username">Create a Username</label>
-                        <input type="text" id="username" placeholder="Username..." />
-                        <label for"gameroom">Join Game Room</label>
-                        <input type="text" id="gameroom" placeholder="Gameroom name..."  />
-                        <button type="button" class="btn btn-success" id="joinRoom">Join Game!</button>
-                        <button type="button" class="btn btn-primary" id="createRoom">New Game!</button>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
 
     <!-- bootstrap stuffs -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -89,6 +81,8 @@
     <script>var socket = io();</script>
 
     <!-- ui/ux stuffs -->
+    <script src="js/game.js"></script>
+    <script src="js/welcome.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/chat.js"></script>
   </body>
