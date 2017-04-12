@@ -9,11 +9,13 @@ class Player{
 		this.score = 0;
 		this.hasDrawn = false;
 		this.draw = false;
+		this.currentDrawer = false;
 		this.roomName = "";
+		this.id = "";
 	}
 
 	score () {
-		return `${this.name} curent has a score of ${this.score}`;
+		return `${this.name} currently has a score of ${this.score}`;
     }
 	
 	guess () {
@@ -28,15 +30,13 @@ const game = {
 				//readyPlayers: 0,
 				players : [],
 				cardAn: '',
-				deck : '';
+				deck : ''
 			}
 
 let tableString = "";
-let deck;
 let createTable;
 let chooseCard;
 let getDeck;
-let card;
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -50,26 +50,32 @@ createTable = (cards) => {
 chooseCard = (min,max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
-  card = deck[Math.floor(Math.random() * (max - min)) + min];
+  game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
 }
 
 // select deck from server
-getDeck = (min,max) => {
+getDeck = (min,max,callback) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   deckNumber = Math.floor(Math.random() * (max - min)) + min;
   socket.emit('getDeck',deckNumber);
 }
-socket.on('receiveDeck',(data) => {
-		deck = data;
-		createTable(deck);
-	}
-)
+timer = (startTime) => {
+	//countdown timer set
+	setInterval({},1000)
+}
+//start timer and show cardAn to player
+beginGame = (answer) => {
+	//show answer to player
+
+
+}
+
 
 //select random card to be drawn
 
 
-
+/*
 // = player interactions
 //sever emit once a player joins to increase game.players
 socket.emit('setup', () => {
@@ -102,7 +108,7 @@ socket.on('playerSelected',(gameInfo) => {
 		chooseCard(0,getDeck.length - 1);
 	}
 });
-
+*/
 
 
 //
@@ -141,7 +147,7 @@ let button = document.getElementById('startGame');
 button.addEventListener('click', (e) =>{
 	let roomName = document.getElementById('createRoom').value;
 	console.log('ran')
-	socket.emit('test',roomName);
+	socket.emit('createRoom',roomName);
 
 })
 socket.on('messageName',(message)=>{
@@ -149,6 +155,23 @@ socket.on('messageName',(message)=>{
 })
 //
 
+/*
+let StrButton = document.getElementById('startButton');
+StrButton.addEventListener('click', (e) =>{
+	//emit player is getting ready to draw and get deck from server:
+	socket.emit('setupGame');
+	//call to server to receive deck
+	getDeck(0,4);
+});
+//receive deck after getDeck() call
+socket.on('deckRecieved',(data) => {
+		//store chosen deck
+		game.deck = data;
+		//create table from deck
+		createTable(game.deck);
+		//choose card from deck
+		chooseCard(0,game.deck.length - 1);
+});
 
 let CRButton = document.getElementById('createButton');
 CRButton.addEventListener('click', (e) =>{
@@ -158,9 +181,6 @@ CRButton.addEventListener('click', (e) =>{
 	player.name = playerName;
 	player.roomName = roomName;
 	socket.emit('createRoom',roomName);
-})
-socket.on('roomCreated', () => {
-
 });
 
 let JRButton = document.getElementById('joinButton');
@@ -171,12 +191,16 @@ JRButton.addEventListener('click', (e) =>{
 	player.name = playerName;
 	player.roomName = roomName;
 	socket.emit('joinRoom',roomName);
-})
-
-socket.on('roomJoined',(roomName) => {
-	console.log(roomName,' joined');
+});
+*/
+socket.on('roomJoined',(msg) => {
+	player.id = msg.id;
+	console.log(msg.roomName,' joined');
 });
 
-socket.on('roomCreated',(roomName) => {
-	console.log(roomName,' created');
+socket.on('roomCreated',(msg) => {
+	player.id = msg.id;
+	console.log(msg.roomName,' created');
 });
+
+socket.on('messge',(msg)=>{console.log('weop: ',msg)})
