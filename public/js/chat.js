@@ -1,43 +1,71 @@
 (function(){
-    var chatColumn    = $('#chatColumn'),
-        messageColumn = chatColumn.find('.messages'),
-        chatForm      = chatColumn.find('form'),
-        message       = chatForm.find('textarea[name="chatInput"]'),
-        chatBtn       = chatForm.find('button'),
-        marginHeight  = 2;
+    'use strict'
+    // == variables
+    var chatColumn = document.getElementById('chatColumn');
+    var messageColumn = chatColumn.querySelector('.messages');
+    var chatForm = chatColumn.querySelector('form');
+    var message = chatForm.querySelector('[name="chatInput"]');
+    var welcomeMessage = null; // not yet created
 
+    // == event listeners
+    chatForm.addEventListener('submit', submitChat);
+    chatForm.addEventListener('onsubmit', submitChat);
+    socket.on('chatUpdate', function(data){ printMessage(data); });
+    socket.on('setup', function(data){ printHistory(data); });
 
-
-
-
-    var getUserMessage = function(){
-        var text = message.val();
-        text.length > 0 ? addMessage(text) : message.focus();
+    // == setup
+    if (welcomeMessage === null) {
+        messageColumn.innerHTML += '<p class="chatWelcome">Welcome!</p>';
+        moveChatUp();
     }
 
-    var addMessage = function(str){
-        var user    = PIC.user.username,
-            message = '<p><span class="username">' + user + ': </span><span class="user-message">' + str + '</span></p>',
-            height = 0;
-        messageColumn.append(message);
+    // function lib
+    function submitChat(e){
+        e.preventDefault();
+        var name = PIC.user.username;
+        var msg = message.value;
+        var currentChat = '';
+        if (msg.length < 1) return; // stop if no message
 
-        height = $(message).height();
-        adjustHeight(height);
+        // show message in chat and clear fields
+        printMessage({"username":name, "userMessage":msg});
+        message.value = '';
+        message.focus();
+
+        // send server username, message, and copy of current chat
+        currentChat = messageColumn.innerHTML;
+        socket.emit('chatUpdate',{"username":name, "userMessage":msg, "currentChat":currentChat});
     }
 
-    var adjustHeight = function(num){
-        var columnHeight  = messageColumn.height(),
-            chatContent   = messageColumn.find('p'),
-            firstChatItem = chatContent[0],
-            marginTop     = 0;
-
-
-        $(firstChatItem).css({ marginTop: firstMarinTop - num + 'px'})
+    function printMessage(obj){
+        messageColumn.innerHTML += '<p><span class="username">' + obj.username + ': </span><span class="user-message">' + obj.userMessage + '</span></p>';
+        moveChatUp();
     }
 
-    chatBtn.on('click', getUserMessage);
+    function moveChatUp(){
+        welcomeMessage = messageColumn.querySelector('.chatWelcome');
+        var contentHeight = Array
+            .from(messageColumn.querySelectorAll('p'))
+            .reduce(function(total, el){
+                return total + el.clientHeight;
+            },0);
+        if (contentHeight <= messageColumn.clientHeight) {
+            welcomeMessage.style.marginTop = (messageColumn.clientHeight - contentHeight)+'px';
+        } else {
+            welcomeMessage.style.marginTop = '0px';
+            messageColumn.scrollTop = messageColumn.scrollHeight;
+        }
+
+    }
+
+    function printHistory(data){
+        if (data.chatHistory.length > 0){
+            messageColumn.innerHTML = data.chatHistory;
+        }
+    }
 
     return PIC.chat = {
-        "addMessage": addMessage
+        "addMessage": printMessage
     }
+
 }());

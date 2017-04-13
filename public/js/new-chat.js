@@ -13,7 +13,6 @@ chatForm.addEventListener('submit', submitChat);
 chatForm.addEventListener('onsubmit', submitChat);
 socket.on('chatUpdate', function(data){ printMessage(data); });
 socket.on('setup', function(data){ printHistory(data); });
-socket.on('userDC', function(data){ printNotice(data); });
 
 // == setup
 if (welcomeMessage === null) messageColumn.innerHTML += '<p class="chatWelcome">Welcome!</p>';
@@ -65,9 +64,7 @@ function printHistory(data){
     }
 }
 function printNotice(data){
-    console.log(data.msg);
-    console.log('tester');
-    messageColumn.innerHTML += '<p class="notice">' + data.msg + '</p>';
+
 }
 
 // == misc
