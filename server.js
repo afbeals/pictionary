@@ -54,7 +54,7 @@ io.sockets.on('connection',function(socket){
 	//broadcast to all to update
 	//socket.broadcast('setupGame');
 
-	//once a connection with certain name:
+	// once a connection with certain name:
 	socket.on('chatUpdate', function(data){
 		chatHistory = data.currentChat; // maintain server-side copy of chat for newcomers
 		socket.broadcast.emit('chatUpdate', data);
