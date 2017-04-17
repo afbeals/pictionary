@@ -64,8 +64,8 @@
         }
     }
 
-    return PIC.chat = {
-        "addMessage": printMessage
-    }
+    // return PIC.chat = {
+    //     "addMessage": printMessage
+    // }
 }());
 

@@ -12,6 +12,7 @@ class Player{
 		this.currentDrawer = false;
 		this.roomName = "";
 		this.id = "";
+		this.spectate = false;
 	}
 
 	score () {
@@ -23,6 +24,7 @@ class Player{
     }
 
 }
+const player = new Player();
 const table = document.getElementById('guessWrapper');
 const game = {
 				score : 0,
@@ -30,6 +32,7 @@ const game = {
 				//readyPlayers: 0,
 				players : [],
 				cardAn: '',
+				timer: 60,
 				deck : ''
 			}
 
@@ -37,6 +40,14 @@ let tableString = "";
 let createTable;
 let chooseCard;
 let getDeck;
+let timer;
+let beginGame;
+let showDrawingTools;
+let countdown;
+
+
+let endGame;
+//-- need to set up end game / need to set up players picking cards
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -51,80 +62,74 @@ chooseCard = (min,max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
+  //begin the game
+  beginGame(game.cardAn);
+  console.log(game.cardAn, player, game);
+  socket.emit('beginGame',{cardAn: game.cardAn, roomName: player.roomName});
 }
 
 // select deck from server
 getDeck = (min,max,callback) => {
   min = Math.ceil(min);
   max = Math.floor(max);
-  deckNumber = Math.floor(Math.random() * (max - min)) + min;
-  socket.emit('getDeck',deckNumber);
+  let deckNumber = Math.floor(Math.random() * (max - min)) + min;
+  console.log(deckNumber);
+  socket.emit('getDeck',{deckNumber: deckNumber,roomName: player.roomName});
 }
-timer = (startTime) => {
-	//countdown timer set
-	setInterval({},1000)
+countdown = (time,callback) => {
+	for(let i = time; i > 0; --i) {
+	    let int = setInterval(() => {
+	        //document.getElementById("modalTimer").innerHTML = "Game starts in " + i + "...";
+	        i-- || clearInterval(int); //document.getElementById("modalTimer").innerHTML = "Go!"; //hide modal
+	    }, 1000);
+	};
+	callback;
+}
+timer = (time) => {
+	//then begin countdown timer 
+	for(let i = time; i > 0; --i) {
+	    let int = setInterval(() => {
+	        //document.getElementById("timerDisplay").innerHTML = "Time remaining " + i;
+	        i-- || clearInterval(int); //document.getElementById("timerDisplay").innerHTML = "Times Up!"; 
+	    }, 1000);
+	};
+	//endGame();
 }
 //start timer and show cardAn to player
 beginGame = (answer) => {
-	//show answer to player
+	//if drawer
+	if(player.draw){
+		//show answer to player (show in same modal above countdown timer)
+		//possibly start an animated clock;
 
-
+		//start countdown modal > run timer
+		countdown(10, timer(game.timer));	
+	}else if(!player.draw && !player.spectate){
+		//if player and not spectator
+		countdown(10, timer(game.timer));	
+	}else if(player.spectate && !player.draw){
+		//if just spectator
+		countdown(10, timer(game.timer));	
+	}
 }
 
+//spectate and non-drawer countdown
+socket.on('gameBegun', (answer) => {
+	game.cardAn = answer;
+	beginGame(answer);
+})
 
-//select random card to be drawn
+showDrawingTools  = () => {
+	//show content with class drawing
+	if (player.draw){document.body.classList.add('drawing')};
+}
 
-
-/*
-// = player interactions
-//sever emit once a player joins to increase game.players
-socket.emit('setup', () => {
-	game.totalPlayers++;
-});
-
-//select player
-//recieve information that client is drawer
-const startButton = document.getElementById('startGame');
-startButton.addEventListener('click', (e) => {
-	game.readyPlayers++;
-	//run function that disables start button
-	this.classList.add("disabled");
-	//once players ready match total players start the game
-	if(game.readyPlayers == game.totalPlayers){
-		//select player
-		socket.emit('startGame');
-	}
-	
-});
-//!update username after createing instantiate of player function
-socket.on('playerSelected',(gameInfo) => {
-	if(gameInfo.playerNumber == 'username'.number){
-		'username'.draw = true;
-//update to an alert or use modal
-		console.log('username'.name + " is the drawer! Begin when you'd like!");
-//update max to final number of total amount of decks available
-		deck = gameInfo.deck;
-		getDeck(0,4);
-		chooseCard(0,getDeck.length - 1);
-	}
-});
-*/
-
-
-//
-
-
+//simu
 // == mock server inputs
-function setDrawer(){
-    player.draw = true;
-    console.log('you may draw now');
-}
-
-//setDrawer();
 let cards = ['box','dress','karina'];
 createTable(cards);
-const cardSelected = document.getElementsByClassName('card');
 
+const cardSelected = document.getElementsByClassName('card');
 for(let x = 0;x<cardSelected.length;++x){
 	cardSelected[x].addEventListener('click', (e) => {
 		//fire modal , mark as possible, mark as eliminated, mark as final
@@ -136,76 +141,75 @@ for(let x = 0;x<cardSelected.length;++x){
 		//final > change to green, mark all others as elim, set player guess to this card
 	});
 }
-
-socket.on('selectRoom', ()=>{
-	//fire modal
-
-});
-
 //simu
-let button = document.getElementById('startGame');
-button.addEventListener('click', (e) =>{
-	let roomName = document.getElementById('createRoom').value;
-	console.log('ran')
-	socket.emit('createRoom',roomName);
 
-})
-socket.on('messageName',(message)=>{
-	console.log(message);
-})
-//
 
-/*
-let StrButton = document.getElementById('startButton');
+let StrButton = document.getElementById('startGame');
 StrButton.addEventListener('click', (e) =>{
 	//emit player is getting ready to draw and get deck from server:
-	socket.emit('setupGame');
+	socket.emit('setupGame', player.roomName);
 	//call to server to receive deck
 	getDeck(0,4);
 });
+
+//let client know game beginning soon:
+socket.on('settingUpGame',(message)=>{
+	//update to use modal
+	console.log(message);
+});
+
 //receive deck after getDeck() call
 socket.on('deckRecieved',(data) => {
 		//store chosen deck
 		game.deck = data;
+		//if drawer choose answer, (optional:) and send answer to clients
 		//create table from deck
-		createTable(game.deck);
-		//choose card from deck
-		chooseCard(0,game.deck.length - 1);
+		if(player.draw == true){
+			//choose card from deck
+			chooseCard(0,game.deck.length - 1);
+		}else if(player.draw == false && player.spectate == false){
+			//if not drawer, create table from cards
+			//create table to display options
+			createTable(game.deck);
+		}
 });
 
-let CRButton = document.getElementById('createButton');
-CRButton.addEventListener('click', (e) =>{
-	let roomName = document.getElementById('createRoom').value;
-	let playerName = document.getElementById('playerName').value;
-	const player = new Player();
+let NGButton = document.getElementById('newGameBtn');
+NGButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementsByName('bunk')[0].value;
+	let playerName = document.getElementsByName('username')[0].value;
 	player.name = playerName;
 	player.roomName = roomName;
 	socket.emit('createRoom',roomName);
 });
 
-let JRButton = document.getElementById('joinButton');
+let JRButton = document.getElementById('joinGameBtn');
 JRButton.addEventListener('click', (e) =>{
-	let roomName = document.getElementById('joinRoom').value;
-	let playerName = document.getElementById('playerName').value;
-	const player = new Player();
+	let roomName = document.getElementsByName('gameId')[0].value;
+	let playerName = document.getElementsByName('username')[0].value;
 	player.name = playerName;
 	player.roomName = roomName;
 	socket.emit('joinRoom',roomName);
 });
-*/
+
 socket.on('roomJoined',(msg) => {
 	player.id = msg.id;
-	console.log(msg.roomName,' joined');
+	console.log(msg.roomName,' joined',player);
 });
 
 socket.on('roomCreated',(msg) => {
 	player.id = msg.id;
-	console.log(msg.roomName,' created');
+	//temp place setting draw to true in this function:
+	player.draw = true;
+	player.currentDrawer = true;
+	//run function that displays start button:
+	showDrawingTools();
+	console.log(msg.roomName,' created', player);
 });
 
-socket.on('messge',(msg)=>{console.log('weop: ',msg)})
-/* global object setup
-(function(){
+socket.on('messge',(msg)=>{console.log('weop: ',msg)});
+//global object setup (from chat-feature-branch)
+
 
     var startGame = function(){
         $('.intro').fadeOut(250, function(){
@@ -218,12 +222,34 @@ socket.on('messge',(msg)=>{console.log('weop: ',msg)})
         }
     }
 
-
-    return PIC = {
+    let PIC = {
         user: {},
         game: {
             "startGame": startGame
         }
     }
-}()); */
 
+
+// //global object setup (from chat-feature-branch)
+// (function(){
+
+//     var startGame = function(){
+//         $('.intro').fadeOut(250, function(){
+//             $('.stage').fadeIn(250);
+//         });
+//         if (PIC.user.joinGame.length > 0){
+//             // do something to find that game
+//         } else {
+//             // do stuff to start new game
+//         }
+//     }
+
+//     let PIC = {
+//         user: {},
+//         game: {
+//             "startGame": startGame
+//         }
+//     }
+
+//     return PIC;
+// }()); 

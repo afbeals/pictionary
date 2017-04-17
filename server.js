@@ -17,7 +17,9 @@ var io = require('socket.io').listen(server);
 var chatHistory = '';
 const decks = {
 	animal: ['a','b','c','d','e'],
-	event: ['f','g','h','i','j']
+	event: ['f','g','h','i','j'],
+	name: ['karina','allan','trevor'],
+	place: ['oregon','washington','california']
 }
 io.sockets.on('connection',function(socket){
 //starting game
@@ -46,7 +48,21 @@ io.sockets.on('connection',function(socket){
 		//update game object for all in room;
 		//io.in(roomName).emit('getPlayers', 'object');
 	});
-
+	//send message to other clients letting know game will start soon:
+	socket.on('setupGame',(roomName)=>{
+		//send to all clients in room except sender;
+		socket.broadcast.in(roomName).emit('settingUpGame', 'Getting ready to start the game!');
+	});
+	//choose from decks and send back to drawer
+	socket.on('getDeck',(data)=>{
+		//send the array back to all clients;
+		io.in(data.roomName).emit('deckRecieved', decks[Object.keys(decks)[data.deckNumber]]);
+	});
+	//tell other clients in room to begin countdown timer
+	socket.on('beginGame', (data) => {
+		//send answer to all but sender
+		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
+	});
 
 //------------------------------------------------------------------------------------------
 	// emit.setup will transfer chatHistory and any setup data for newcomers
