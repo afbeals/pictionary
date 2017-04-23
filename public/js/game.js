@@ -25,7 +25,7 @@ class Player{
 
 }
 const player = new Player();
-const table = document.getElementById('guessWrapper');
+const table = document.getElementById('table');
 const game = {
 				score : 0,
 				//totalPlayers: 0,
@@ -53,7 +53,7 @@ let endGame;
 // build out front end table based on chosen deck
 createTable = (cards) => {
 	cards.forEach((e, i) => {
-	    tableString +=`<div class="cardWrapper"><div class="card">${e}</div></div>`
+	    tableString +=`<div class="card"><div class="cardInner test"><div class="front">${e}</div><div class="back"><button class="notPossible">Darken</button><button class="Possible">Possible</button><button class="Final">Final Choice</button></div></div></div>`
 	});
 	table.innerHTML = tableString;
 } 
@@ -64,7 +64,6 @@ chooseCard = (min,max) => {
   game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
   //begin the game
   beginGame(game.cardAn);
-  console.log(game.cardAn, player, game);
   socket.emit('beginGame',{cardAn: game.cardAn, roomName: player.roomName});
 }
 
@@ -73,7 +72,6 @@ getDeck = (min,max,callback) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   let deckNumber = Math.floor(Math.random() * (max - min)) + min;
-  console.log(deckNumber);
   socket.emit('getDeck',{deckNumber: deckNumber,roomName: player.roomName});
 }
 countdown = (time,callback) => {
@@ -124,26 +122,6 @@ showDrawingTools  = () => {
 	if (player.draw){document.body.classList.add('drawing')};
 }
 
-//simu
-// == mock server inputs
-let cards = ['box','dress','karina'];
-createTable(cards);
-
-const cardSelected = document.getElementsByClassName('card');
-for(let x = 0;x<cardSelected.length;++x){
-	cardSelected[x].addEventListener('click', (e) => {
-		//fire modal , mark as possible, mark as eliminated, mark as final
-
-		//possible > change bg to yellow
-
-		//elim > change bg to red, opacity lower
-
-		//final > change to green, mark all others as elim, set player guess to this card
-	});
-}
-//simu
-
-
 let StrButton = document.getElementById('startGame');
 StrButton.addEventListener('click', (e) =>{
 	//emit player is getting ready to draw and get deck from server:
@@ -179,7 +157,6 @@ NGButton.addEventListener('click', (e) =>{
 	let roomName = document.getElementsByName('bunk')[0].value;
 	let playerName = document.getElementsByName('username')[0].value;
 	player.name = playerName;
-	player.roomName = roomName;
 	socket.emit('createRoom',roomName);
 });
 
@@ -188,26 +165,30 @@ JRButton.addEventListener('click', (e) =>{
 	let roomName = document.getElementsByName('gameId')[0].value;
 	let playerName = document.getElementsByName('username')[0].value;
 	player.name = playerName;
-	player.roomName = roomName;
 	socket.emit('joinRoom',roomName);
 });
 
 socket.on('roomJoined',(msg) => {
 	player.id = msg.id;
-	console.log(msg.roomName,' joined',player);
+	document.getElementById('gameId').innerHTML = `${msg.roomName}`;
 });
 
 socket.on('roomCreated',(msg) => {
 	player.id = msg.id;
+	player.roomName = msg.roomName;
+    console.log(canvas.height, canvas.width);
+	document.getElementById('gameId').innerHTML = `${msg.roomName}`;
 	//temp place setting draw to true in this function:
 	player.draw = true;
 	player.currentDrawer = true;
 	//run function that displays start button:
 	showDrawingTools();
-	console.log(msg.roomName,' created', player);
 });
 
-socket.on('messge',(msg)=>{console.log('weop: ',msg)});
+socket.on('chooseAnotherRoom',()=>{
+	//fire modal that allows client to emit joinRoom
+});
+
 //global object setup (from chat-feature-branch)
 
 

@@ -21,8 +21,41 @@ const decks = {
 	name: ['karina','allan','trevor'],
 	place: ['oregon','washington','california']
 }
+const currentRooms = {
+	currentRooms : [],
+	numOfPlayers : 0,
+
+	//remove all clients from room
+	destroyAll () {
+
+	},
+
+	//remove single client from room
+	removePlayer (){
+
+	},
+	//ban client
+	banPlayer(){
+
+	},
+
+	get CurrentNumOfPlayers (){
+		console.log(`currently connected players: ${this.numOfPlayers}`);
+	}
+
+}
+const roomIdGenerator = function(roomName){
+  min = Math.ceil(100000);
+  max = Math.floor(9999999);
+  let id = Math.floor(Math.random() * (max - min)) + min ;
+  roomName += "(" + id + ")" ;
+  return roomName ;
+}
 io.sockets.on('connection',function(socket){
 //starting game
+	//incr player count:
+	++currentRooms.numOfPlayers;
+	currentRooms.CurrentNumOfPlayers;
 	//on connect, should emit to client to fire modal instead
 	socket.emit('selectRoom');
 	//upon selection of join a room
@@ -38,15 +71,23 @@ io.sockets.on('connection',function(socket){
 	});
 	//upon selection of create a room
 	socket.on('createRoom', (roomName) => {
+		let roomHash = roomIdGenerator(roomName);
 		//create room
-		socket.join(roomName);
+		socket.join(roomHash);
 		//fire any game creation functions needed to client
 		//send over socket.id to store client side
 		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
-		socket.emit('roomCreated',{roomName: roomName,id : socketId});
+		socket.emit('roomCreated',{roomName: roomHash,id : socketId});
 		//get 
 		//update game object for all in room;
 		//io.in(roomName).emit('getPlayers', 'object');
+	});
+	//leave room
+	socket.on('leaveRoom',(roomName)=>{
+		//leave room
+		socket.leave(roomName);
+		//fire modal asking if they'd like to join another room;
+		socket.emit('chooseAnotherRoom');
 	});
 	//send message to other clients letting know game will start soon:
 	socket.on('setupGame',(roomName)=>{
@@ -106,6 +147,8 @@ io.sockets.on('connection',function(socket){
 
 	// socket disconect
 	socket.on('disconnect',function(){
+		//decrease player count:
+		--currentRooms.numOfPlayers;
 		// show others that user has left
 		console.log('LEFT!')
 		socket.emit('userDC', {"msg": 'User has left the game.'});

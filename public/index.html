@@ -16,6 +16,7 @@
 
 
     <body class="container">
+        <h3 id="gameId"></h3>
         <div class="row intro">
             <h1>Pictionary</h1>
             <h3>A real-time, multiplayer, pictionary game</h3>
@@ -38,7 +39,7 @@
       <!-- content -->
           <div class="row stage">
               <h1>Pictionary</h1>
-              <!-- CANVAS -->
+              <!-- MAIN SECTION / CANVAS -->
               <div class="col-sm-8 col-md-9">
                   <div class="cavasWrapper">
                         <button type="button" class="canvas-btn"></button>
@@ -56,17 +57,10 @@
                         </div>
                     </div>
                     <canvas id="canvas"></canvas>
+                    <!-- CARD TABLE -->
+                    <div id="table"></div>
               </div>
-              <div id="guessWrapper">
-                <div class="cardWrapper">
-                  <div class="card">test</div>
-                </div>
-              </div>
-              <div>
-                <input id="createRoom" name="createRoom" type="text" placeholer="Room Name" />
-                <button id="startGame">start button</button>
-              </div>
-          </div>
+              
               <!-- CHAT COLUMN -->
               <div class="col-sm-4 col-md-3" id="chatColumn">
                   <div class="messages" readonly></div>
@@ -75,6 +69,13 @@
                       <button type="submit" >Submit <i class="fa fa-arrow-up" aria-hidden="true"></i></button>
                   </form>
               </div>
+
+              
+              <div>
+                <input id="createRoom" name="createRoom" type="text" placeholer="Room Name" />
+                <button id="startGame">start button</button>
+              </div>
+
           </div>
       </div>
 
@@ -88,10 +89,10 @@
 
     <!-- ui/ux stuffs -->
     <script src="js/game.js"></script>
-    
     <script src="js/canvas.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/welcome.js"></script>
+    <script src="js/styling.js"></script>
   </body>
 </html>
 
