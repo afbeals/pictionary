@@ -17,6 +17,9 @@
     var isDrawing = false;
     var lastX = 0;
     var lastY = 0;
+    var playerLastX = -100;
+    var playerLastY = -100;
+    var ctxPackage = {};
 
     function draw(e) {
         if (!isDrawing) return;
@@ -27,22 +30,31 @@
         ctx.stroke();
         lastX = e.offsetX;
         lastY = e.offsetY;
+        ctxPackage['offsetX'] = e.offsetX / canvas.width;
+        ctxPackage['offsetY'] = e.offsetY / canvas.height;
+        ctxPackage['lastX'] = e.offsetX / canvas.width;
+        ctxPackage['lastY'] = e.offsetY  / canvas.height;
+        socket.emit('playerDrawing', ctxPackage);
     }
 
     canvas.addEventListener('mousemove', draw)
     canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        lastX = e.offsetX;
-        lastY = e.offsetY;
-
-        if (canvasSettingsPanel.classList.contains('active')) {
-            canvasSettingsPanel.classList.remove('active');
-        }
+        player.draw ? (
+                        isDrawing = true, 
+                        lastX = e.offsetX,
+                        lastY = e.offsetY,
+                        (canvasSettingsPanel.classList.contains('active')) ? canvasSettingsPanel.classList.remove('active') : null
+                        ): isDrawing = false
     });
     canvas.addEventListener('mouseup', () => isDrawing = false);
     canvas.addEventListener('mouseout', () => isDrawing = false);
 
     // height and width attributes my be dynamically set
+    /*need to also set #screen to same height
+    let screen = document.getElementById('screen');
+    screen.height = canvas.clientHeight;
+    screen.width = canvas.clientWidth;
+    */
     canvas.height = canvas.clientHeight;
     canvas.width = canvas.clientWidth;
 
@@ -62,6 +74,7 @@
         if (!mouseDown) return;
         sizeResult.style.fontSize = this.value+'px';
         ctx.lineWidth = this.value;
+        ctxPackage['lineWidth'] = sizeSlider.value;
     }
 
     sizeSlider.addEventListener('change', updateBrushSize);
@@ -79,6 +92,7 @@
         const color = this.value
         colorResult.style.color = `hsl(${color}, 100%, 50%)`;
         ctx.strokeStyle = `hsl(${color}, 100%, 50%)`;
+        ctxPackage['strokeStyle'] = `hsl(${color}, 100%, 50%)`;
     }
 
     colorSlider.addEventListener('change', updateBrushColor);
@@ -95,5 +109,22 @@
             canvasSettingsPanel.classList.add('active');
         }
     }
+
+    // == Socket IO
+
+    socket.on('playerStartedDrawing',function(ctxServerpackage){
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = ctxServerpackage.strokeStyle;
+        if(playerLastX != ctxServerpackage.offsetX){playerLastX = ctxServerpackage.offsetX};
+        if(playerLastY != ctxServerpackage.offsetY){playerLastY = ctxServerpackage.offsetY};
+        ctx.moveTo(playerLastX * canvas.width, playerLastY * canvas.height);
+        ctx.lineTo(ctxServerpackage.offsetX * canvas.width, ctxServerpackage.offsetY * canvas.height);
+        ctx.lineWidth = ctxServerpackage.lineWidth;
+        ctx.stroke();
+        playerLastX = ctxServerpackage.offsetX;
+        playerLastY = ctxServerpackage.offsetY;
+
+    });
 
 }()) // end iife wrapper

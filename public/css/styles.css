@@ -1,1 +1,333 @@
 .stage{display:none}.stage h1{text-align:center}.stage .cavasWrapper .canvas-btn{display:block;position:absolute;top:5px;right:20px;font-size:20px;line-height:1;padding:6px;background-color:rgba(0,0,0,0.25);border-radius:8px;color:white;z-index:20}.stage .cavasWrapper .canvas-btn:before{font-family:FontAwesome;content:"\f1de"}.stage .cavasWrapper .canvas-btn:hover{background-color:rgba(0,0,0,0.5);font-size:22px;padding:5px}.stage .cavasWrapper .settings-panel{display:none;box-shadow:1px 1px 3px grey,-1px 1px 3px grey,1px -1px 3px grey,-1px -1px 3px grey;position:absolute;top:5px;right:20px;z-index:19;padding:20px 10px;background-color:rgba(255,255,255,0.9)}.stage .cavasWrapper .settings-panel.active{display:block}.stage .cavasWrapper .settings-panel .settings-row{display:block;width:300px;margin-bottom:40px;position:relative}.stage .cavasWrapper .settings-panel .settings-row:after{display:table;content:"";clear:both}.stage .cavasWrapper .settings-panel .settings-row label{display:block;margin-bottom:0}.stage .cavasWrapper .settings-panel .settings-row input{display:block;width:200px;float:left}.stage .cavasWrapper .settings-panel .settings-row .result{float:left;display:block;width:100px;text-align:center;line-height:0;margin-top:7px}.stage .cavasWrapper .settings-panel .settings-row .result:after{content:"\f111";font-family:FontAwesome}.stage .cavasWrapper .settings-panel .brush-color .result{font-size:60px;text-shadow:0 0 10px #565656}.stage #canvas{border:1px solid #000000;display:block;height:500px;width:100%}.stage #chatColumn:after{display:table;content:"";clear:both}.stage #chatColumn .messages{border:1px solid red;width:100%;display:block;height:500px;margin:0 0 10px 0;resize:none;overflow-y:scroll;outline:0;position:relative}.stage #chatColumn .messages p{display:block;margin:0;padding-bottom:5px}.stage #chatColumn .messages p .username{font-weight:bold}.stage #chatColumn .messages p .user-message{word-wrap:break-word}.stage #chatColumn .messages .chatWelcome{text-align:center;font-style:italic;color:#5b5b5b;font-weight:bold;letter-spacing:1px;font-size:16px}.stage #chatColumn input,.stage #chatColumn textarea{display:block;width:100%;margin:5px 0}.stage #chatColumn button[type="submit"]{float:right}.intro h1{text-align:center;margin-top:100px}.intro h3{text-align:center}.intro .action-box{max-width:800px;margin:10px auto;padding:30px 45px}.intro .action-box input.username{display:block;margin:0 0 25px 0;width:100%;font-size:24px;text-align:center}.intro .action-box .left{float:left;width:50%;display:block;border-right:1px solid grey;padding-right:45px}.intro .action-box .right{float:right;width:50%;display:block;position:relative;padding-left:45px}.intro .action-box .right:before{content:"OR";display:block;height:55px;width:55px;font-size:26px;color:#FB4D3D;background-color:#fff;position:absolute;top:50px;left:-27px;border-radius:100px;line-height:53px;border:1px solid grey}.intro .action-box>div{text-align:center;padding:3px}.intro .action-box>div p{font-size:26px;text-align:center}.intro .action-box>div input{display:block;width:100%;font-size:24px;text-align:center}.intro .action-box>div button{display:block;width:100%;margin:20px auto 0;background-color:#1eb91e;color:white;font-size:22px;line-height:1;padding:15px;border-radius:5px;transition:linear .15s;box-shadow:0 0 15px #868686}.intro .action-box>div button:hover,.intro .action-box>div button:focus{box-shadow:0 0 0 transparent;text-shadow:1px 1px 1px black;background-color:#158315}button{border:none;background-color:transparent;outline:0}
+
+#table{
+  display:block;
+  text-align: center;
+}
+
+.card {
+  width: 28%;
+  height: auto;
+  min-height:100px;
+  margin:5px 10px;
+  position: relative;
+  display: inline-block;
+  -webkit-perspective: 800px;
+  -ms-perspective: 800px;
+  perspective: 800px;
+  border-radius: 4px;
+}
+.cardInner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: -webkit-transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: -webkit-transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), -webkit-transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+.cardInner div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 6px;
+  //background: #fff;
+  background:#237dda;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-pack: center;
+  -o-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -o-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font: 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #47525d;
+  color: white;
+    text-shadow: 1px 1px 5px black;
+    text-transform: capitalize;
+    font-size: 1.5em;
+}
+.cardInner .back {
+    -webkit-transform: rotateY(180deg);
+  	transform: rotateY(180deg);
+}
+.cardInner.flipped {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.cardInner .back button{
+	box-shadow: 1px 2px 5px black;
+    margin: 5%;
+    border-radius: 5px;
+    padding: 0% 6%;
+}
+
+.cardInner .back button.notPossible{
+	background: #da2323;
+}
+.cardInner .back button.Possible{
+	background: #d7da23;
+}
+.cardInner .back button.Final{
+	background: #23da4a;
+}
+.cardInner .back h3{
+	display: block;
+    position: absolute;
+    top: -15px;
+}
+
+.cardInner.dis div {
+	background: rgb(160, 159, 159);
+    opacity: 0.5;
+    color: black;
+}
+.cardInner.caution div {
+	background:rgba(218, 221, 54, 0.8);
+	opacity: 1;
+    color: white;
+}
+.cardInner.selected div {
+	background:rgba(67, 205, 84, 0.83);
+	opacity: 1;
+    color: white;
+}
+
+.cardInner .front span{
+	position: absolute;
+    width: 10px;
+    height: 10px;
+}
+.cardInner .front span.topR{
+    right: 10px;
+    top: 10px;
+    border-top: 1px solid #000;
+    border-right: 1px solid #000;
+}
+.cardInner .front span.bottomR{
+    right: 10px;
+    bottom: 10px;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+}
+.cardInner .front span.topL{
+    left: 10px;
+    top: 10px;
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+}
+.cardInner .front span.bottomL{
+    left: 10px;
+    bottom: 10px;
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+}
+
+#screen{
+	position: absolute;
+    width: 500px;
+    height: 500px;
+   	background: rgba(74, 167, 195, 0.6);
+    display: inline-grid;
+    z-index: 20;
+}
+#screen .content{
+	margin: 0 auto;
+    display: inline-grid;
+    align-items: center;
+}
+#screen .content .title{
+	color: #4e4d4d;
+    text-shadow: 1px 1px #c0bdbd;
+    font-size: 3em;
+}
+#screen .content button{
+	border: 1px solid white;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px #9f9f9f;
+    padding: 9px;
+    color: white;
+    text-shadow: 1px 1px black;
+    text-transform: capitalize;
+}
+
+#stopwatch,
+#stopwatch:before,
+#stopwatch:after,
+#stopwatch *,
+#stopwatch *:before,
+#stopwatch *:after {
+  display: inline-block;
+  background: #333;
+  content: "";
+  position: absolute;
+}
+
+#stopwatch {
+  width: 25%;
+  height: 25%;
+  background: transparent;
+  border-radius: 50%;
+  border: 10px solid #333;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+#stopwatch .top {
+  width: 35%;
+  height: 5%;
+  left: 50%;
+  top: 20%;
+  -webkit-transform: translate(-50%, -50px);
+          transform: translate(-50%, -50px);
+  border-radius: 6.66667px;
+  -webkit-border-top-left-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  -webkit-transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+  transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+  transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+  transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045), -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+}
+#stopwatch .top:before, #stopwatch .top:after {
+  width: 13%;
+  height: 20px;
+  background: #333;
+  left: 50%;
+  top: 1px;
+  -webkit-transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+  transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+}
+#stopwatch .top:before {
+  -webkit-transform: translate(-200%, 0);
+          transform: translate(-200%, 0);
+}
+#stopwatch .top:after {
+  -webkit-transform: translate(100%, 0);
+          transform: translate(100%, 0);
+}
+#stopwatch .hand {
+  width: 5px;
+  height: 100px;
+  right:140px;
+  background: transparent;
+  -webkit-transform: translate(90px, 0px);
+          transform: translate(90px, 0px);
+  -webkit-animation: rotating 10s linear infinite;
+          animation: rotating 10s linear infinite;
+  -webkit-animation-delay: 400ms;
+          animation-delay: 400ms;
+  -webkit-animation-play-state: paused;
+          animation-play-state: paused;
+}
+#stopwatch .hand:after {
+  width: 5px;
+  height: 45px;
+  background: #333;
+  border-radius: 10px;
+  -webkit-transform: translateY(10px);
+          transform: translateY(10px);
+}
+#stopwatch:after {
+	display:none;
+  width: 10px;
+  height: 20px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  -webkit-transform: translate(90px, -15px) rotate(35deg);
+          transform: translate(90px, -15px) rotate(35deg);
+}
+
+#toggle:checked + #stopwatch .top {
+  -webkit-transform: translate(-50%, -36.33333px);
+          transform: translate(-50%, -36.33333px);
+}
+#toggle:checked + #stopwatch .top:before, #toggle:checked + #stopwatch .top:after {
+  height: 10px;
+}
+#toggle:checked + #stopwatch .hand {
+  -webkit-animation-play-state: running;
+          animation-play-state: running;
+}
+
+@-webkit-keyframes rotating {
+  from {
+    -webkit-transform: translate(90px, 0px) rotate(0deg);
+            transform: translate(90px, 0px) rotate(0deg);
+  }
+  to {
+    -webkit-transform: translate(90px, 0px) rotate(360deg);
+            transform: translate(90px, 0px) rotate(360deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    -webkit-transform: translate(90px, 0px) rotate(0deg);
+            transform: translate(90px, 0px) rotate(0deg);
+  }
+  to {
+    -webkit-transform: translate(90px, 0px) rotate(360deg);
+            transform: translate(90px, 0px) rotate(360deg);
+  }
+}
+/*
+label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-250px, -50%);
+          transform: translate(-250px, -50%);
+  display: inline-block;
+  border: 2px solid #333;
+  font-family: sans-serif;
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: #333;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+label:active {
+  padding: 12px 15px 8px 15px;
+  background: rgba(255, 255, 255, 0.2);
+}
+*/
+body {
+  /* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #f6e6b4), color-stop(100%, #eaa959));
+  /* Chrome,Safari4+ */
+  background: -webkit-radial-gradient(center, ellipse cover, #f6e6b4 0%, #eaa959 100%);
+  /* Chrome10+,Safari5.1+ */
+  /* Opera 12+ */
+  /* IE10+ */
+  background: -webkit-radial-gradient(center ellipse, #f6e6b4 0%, #eaa959 100%);
+  background: radial-gradient(ellipse at center, #f6e6b4 0%, #eaa959 100%);
+}
+
+.stage #chatColumn .messages{
+	background:white;
+}
+
+.content .time{
+	font-size: 3em;
+	margin-top:115px;
+	margin-bottom:0px;
+}
