@@ -56,6 +56,21 @@
                             </div>
                         </div>
                     </div>
+                    <div id="screen">
+                      <div class="content">
+                        <h3 class="title">Ready?</h3>
+                        <div class="clock">
+                          <label for="toggle">Activate</label>
+                          <input type="checkbox" id="toggle" style="display:none">
+                          <span id="stopwatch">
+                            <span class="top"></span>
+                            <span class="hand"></span>
+                          </span>
+                        </div>
+                        <div class="time">10 seconds....</div>
+                        <button id="startGame">Start Game</button>
+                      </div>
+                    </div>
                     <canvas id="canvas"></canvas>
                     <!-- CARD TABLE -->
                     <div id="table"></div>
@@ -69,13 +84,6 @@
                       <button type="submit" >Submit <i class="fa fa-arrow-up" aria-hidden="true"></i></button>
                   </form>
               </div>
-
-              
-              <div>
-                <input id="createRoom" name="createRoom" type="text" placeholer="Room Name" />
-                <button id="startGame">start button</button>
-              </div>
-
           </div>
       </div>
 

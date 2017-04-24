@@ -1,4 +1,6 @@
 // main: main.less
+@color_1: #333;
+@font_family_1: sans-serif;
 
 .stage {
     display: none;
@@ -95,6 +97,222 @@
         width: 100%;
     }
 
+    // ==== SCREEN STYLES ====
+
+    @-webkit-keyframes "rotating" {
+        from {
+            -webkit-transform: translate(90px, 0px) rotate(0deg);
+            transform: translate(90px, 0px) rotate(0deg);
+        }
+        to {
+            -webkit-transform: translate(90px, 0px) rotate(360deg);
+            transform: translate(90px, 0px) rotate(360deg);
+        }
+    }
+    @keyframes "rotating" {
+        from {
+            -webkit-transform: translate(90px, 0px) rotate(0deg);
+            transform: translate(90px, 0px) rotate(0deg);
+        }
+        to {
+            -webkit-transform: translate(90px, 0px) rotate(360deg);
+            transform: translate(90px, 0px) rotate(360deg);
+        }
+    }
+
+    #screen{
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: rgba(74, 167, 195, 0.6);
+        display: inline-grid;
+        z-index: 20;
+        .content{
+            margin: 0 auto;
+            display: inline-grid;
+            align-items: center;
+            .title{
+                color: #4e4d4d;
+                text-shadow: 1px 1px #c0bdbd;
+                font-size: 3em;
+            }
+            button{
+                border: 1px solid white;
+                border-radius: 5px;
+                box-shadow: 1px 1px 5px #9f9f9f;
+                padding: 9px;
+                color: white;
+                text-shadow: 1px 1px black;
+                text-transform: capitalize;
+            }
+            .time{
+                font-size: 3em;
+                margin-top:115px;
+                margin-bottom:-25px;
+            }
+            .clock{
+                #toggle {
+                    &:checked {
+                        &+#stopwatch {
+                            .top {
+                                -webkit-transform: translate(-50%, -36.33333px);
+                                transform: translate(-50%, -36.33333px);
+                                &:before {
+                                    height: 10px;
+                                }
+                                &:after {
+                                    height: 10px;
+                                }
+                            }
+                            .hand {
+                                -webkit-animation-play-state: running;
+                                animation-play-state: running;
+                            }
+                        }
+                    }
+                }
+                /*
+                label {
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    -webkit-transform: translate(-250px, -50%);
+                    transform: translate(-250px, -50%);
+                    display: inline-block;
+                    border: 2px solid #333;
+                    font-family: @font_family_1;
+                    padding: 10px 15px;
+                    border-radius: 10px;
+                    color: @color_1;
+                    background: rgba(255, 255, 255, 0.1);
+                    &:active {
+                        padding: 12px 15px 8px 15px;
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+                }
+                */
+                #stopwatch {
+                    display: inline-block;
+                    background: #333;
+                    content: "";
+                    position: absolute;
+                    width: 25%;
+                    height: 25%;
+                    background: transparent;
+                    border-radius: 50%;
+                    border: 10px solid #333;
+                    left: 50%;
+                    top: 50%;
+                    -webkit-transform: translate(-50%, -50%);
+                    transform: translate(-50%, -50%);
+                    &:before {
+                        display: inline-block;
+                        background: #333;
+                        content: "";
+                        position: absolute;
+                    }
+                    &:after {
+                        //display: inline-block;
+                        display:none;
+                        background: #333;
+                        content: "";
+                        position: absolute;
+                        width: 10px;
+                        height: 20px;
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
+                        -webkit-transform: translate(90px, -15px) rotate(35deg);
+                        transform: translate(90px, -15px) rotate(35deg);
+                    }
+                    * {
+                        display: inline-block;
+                        background: #333;
+                        content: "";
+                        position: absolute;
+                        &:before {
+                            display: inline-block;
+                            background: #333;
+                            content: "";
+                            position: absolute;
+                        }
+                        &:after {
+                            display: inline-block;
+                            background: #333;
+                            content: "";
+                            position: absolute;
+                        }
+                    }
+                    .top {
+                        width: 35%;
+                        height: 5%;
+                        left: 50%;
+                        top: 20%;
+                        -webkit-transform: translate(-50%, -50px);
+                        transform: translate(-50%, -50px);
+                        border-radius: 6.66667px;
+                        -webkit-border-top-left-radius: 10px;
+                        -webkit-border-top-right-radius: 10px;
+                        -moz-border-radius-topleft: 10px;
+                        -moz-border-radius-topright: 10px;
+                        border-top-left-radius: 10px;
+                        border-top-right-radius: 10px;
+                        -webkit-transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                        transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                        transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                        transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045), -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                        &:before {
+                            width: 13%;
+                            height: 20px;
+                            background: #333;
+                            left: 50%;
+                            top: 1px;
+                            -webkit-transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                            transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                            -webkit-transform: translate(-200%, 0);
+                            transform: translate(-200%, 0);
+                        }
+                        &:after {
+                            width: 13%;
+                            height: 20px;
+                            background: #333;
+                            left: 50%;
+                            top: 1px;
+                            -webkit-transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                            transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
+                            -webkit-transform: translate(100%, 0);
+                            transform: translate(100%, 0);
+                        }
+                    }
+                    .hand {
+                        width: 5px;
+                        height: 100px;
+                        right: 140px;
+                        background: transparent;
+                        -webkit-transform: translate(90px, 0px);
+                        transform: translate(90px, 0px);
+                        -webkit-animation: rotating 10s linear infinite;
+                        animation: rotating 10s linear infinite;
+                        -webkit-animation-delay: 400ms;
+                        animation-delay: 400ms;
+                        -webkit-animation-play-state: paused;
+                        animation-play-state: paused;
+                        &:after {
+                            width: 5px;
+                            height: 45px;
+                            background: #333;
+                            border-radius: 10px;
+                            -webkit-transform: translateY(10px);
+                            transform: translateY(10px);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
+
     // ==== CHAT STYLES =====
     #chatColumn {
 
@@ -114,6 +332,7 @@
             overflow-y: scroll;
             outline: 0;
             position: relative;
+            background:#fff;
 
             p {
                 display: block;

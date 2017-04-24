@@ -50,6 +50,11 @@
     canvas.addEventListener('mouseout', () => isDrawing = false);
 
     // height and width attributes my be dynamically set
+    /*need to also set #screen to same height
+    let screen = document.getElementById('screen');
+    screen.height = canvas.clientHeight;
+    screen.width = canvas.clientWidth;
+    */
     canvas.height = canvas.clientHeight;
     canvas.width = canvas.clientWidth;
 

@@ -53,7 +53,7 @@ let endGame;
 // build out front end table based on chosen deck
 createTable = (cards) => {
 	cards.forEach((e, i) => {
-	    tableString +=`<div class="card"><div class="cardInner test"><div class="front">${e}</div><div class="back"><button class="notPossible">Darken</button><button class="Possible">Possible</button><button class="Final">Final Choice</button></div></div></div>`
+	    tableString +=`<div class="card"><div class="cardInner active"><div class="front"><span class="topL"></span><span class="topR"></span><span class="bottomL"></span><span class="bottomR"></span>${e}</div><div class="back"><h3>${e}</h3><button class="notPossible"><i class="fa fa-times" aria-hidden="true"></i></button><button class="Possible"><i class="fa fa-exclamation" aria-hidden="true"></i></button><button class="Final"><i class="fa fa-check" aria-hidden="true"></i></button></div></div></div>`
 	});
 	table.innerHTML = tableString;
 } 

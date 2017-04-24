@@ -1,20 +1,23 @@
+@color_1: #47525d;
+@color_2: white;
+@color_3: black;
+
 #table{
   display:block;
   text-align: center;
-}
-
-.card {
-  width: 28%;
-  height: auto;
-  min-height:100px;
-  margin:0px 10px;
-  display:inline-block;
-  position: relative;
-  -webkit-perspective: 800px;
-  -ms-perspective: 800px;
-  perspective: 800px;
-  border-radius: 4px;
-    .cardInner {
+  .card {
+    width: 28%;
+    height: auto;
+    min-height: 100px;
+    margin: 5px 10px;
+    position: relative;
+    display: inline-block;
+    -webkit-perspective: 800px;
+    -ms-perspective: 800px;
+    perspective: 800px;
+    border-radius: 4px;
+  }
+  .cardInner {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -34,7 +37,8 @@
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       border-radius: 6px;
-      background: #fff;
+      //background: #fff;
+      background: #237dda;
       display: -webkit-box;
       display: -ms-flexbox;
       display: box;
@@ -49,15 +53,93 @@
       align-items: center;
       font: 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
-      color: #47525d;
+      color: @color_1;
+      color: @color_2;
+      text-shadow: 1px 1px 5px black;
+      text-transform: capitalize;
+      font-size: 1.5em;
+      &.front{
+        span{
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          &.topR{
+            right: 10px;
+            top: 10px;
+            border-top: 1px solid #000;
+            border-right: 1px solid #000;
+          }
+          &.bottomR{
+            right: 10px;
+            bottom: 10px;
+            border-bottom: 1px solid #000;
+            border-right: 1px solid #000;
+          }
+          &.topL{
+            left: 10px;
+            top: 10px;
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+          }
+          &.bottomL{
+            left: 10px;
+            bottom: 10px;
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+          }
+        }
+      }
+      &.back{
+        -webkit-transform: rotateY(180deg);
+        transform: rotateY(180deg);
+        button {
+          box-shadow: 1px 2px 5px black;
+          margin: 5%;
+          border-radius: 5px;
+          padding: 0% 6%;
+        }
+        button.notPossible {
+          background: #da2323;
+        }
+        button.Possible {
+          background: #d7da23;
+        }
+        button.Final {
+          background: #23da4a;
+        }
+        h3 {
+          display: block;
+          position: absolute;
+          top: -15px;
+        }
+      }
     }
-    .back {
+    &.flipped{
       -webkit-transform: rotateY(180deg);
       transform: rotateY(180deg);
     }
-    &.flipped {
-      -webkit-transform: rotateY(180deg);
-      transform: rotateY(180deg);
+    &.dis{
+      .dis {
+        div {
+          background: rgb(160, 159, 159);
+          opacity: 0.5;
+          color: @color_3;
+        }
+      }
+    }
+    &.caution{
+      div {
+        background: #ff9900;
+        opacity: 1;
+        color: @color_2;
+      } 
+    }
+    &.selected{
+      div {
+        background: #00ff1f;
+        opacity: 1;
+        color: @color_2;
+      }
     }
   }
 }
