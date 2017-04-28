@@ -18,7 +18,7 @@ class Player{
 	score () {
 		return `${this.name} currently has a score of ${this.score}`;
     }
-	
+
 	guess () {
 		return `${this.name} guessed ${this.guess}`;
     }
@@ -56,7 +56,7 @@ createTable = (cards) => {
 	    tableString +=`<div class="card"><div class="cardInner active"><div class="front"><span class="topL"></span><span class="topR"></span><span class="bottomL"></span><span class="bottomR"></span>${e}</div><div class="back"><h3>${e}</h3><button class="notPossible"><i class="fa fa-times" aria-hidden="true"></i></button><button class="Possible"><i class="fa fa-exclamation" aria-hidden="true"></i></button><button class="Final"><i class="fa fa-check" aria-hidden="true"></i></button></div></div></div>`
 	});
 	table.innerHTML = tableString;
-} 
+}
 
 chooseCard = (min,max) => {
   min = Math.ceil(min);
@@ -84,11 +84,11 @@ countdown = (time,callback) => {
 	callback;
 }
 timer = (time) => {
-	//then begin countdown timer 
+	//then begin countdown timer
 	for(let i = time; i > 0; --i) {
 	    let int = setInterval(() => {
 	        //document.getElementById("timerDisplay").innerHTML = "Time remaining " + i;
-	        i-- || clearInterval(int); //document.getElementById("timerDisplay").innerHTML = "Times Up!"; 
+	        i-- || clearInterval(int); //document.getElementById("timerDisplay").innerHTML = "Times Up!";
 	    }, 1000);
 	};
 	//endGame();
@@ -101,13 +101,13 @@ beginGame = (answer) => {
 		//possibly start an animated clock;
 
 		//start countdown modal > run timer
-		countdown(10, timer(game.timer));	
+		countdown(10, timer(game.timer));
 	}else if(!player.draw && !player.spectate){
 		//if player and not spectator
-		countdown(10, timer(game.timer));	
+		countdown(10, timer(game.timer));
 	}else if(player.spectate && !player.draw){
 		//if just spectator
-		countdown(10, timer(game.timer));	
+		countdown(10, timer(game.timer));
 	}
 }
 
@@ -117,7 +117,7 @@ socket.on('gameBegun', (answer) => {
 	beginGame(answer);
 })
 
-showDrawingTools  = () => {
+showDrawingTools = () => {
 	//show content with class drawing
 	if (player.draw){document.body.classList.add('drawing')};
 }
@@ -233,4 +233,4 @@ socket.on('chooseAnotherRoom',()=>{
 //     }
 
 //     return PIC;
-// }()); 
+// }());
