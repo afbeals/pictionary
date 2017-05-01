@@ -57,25 +57,33 @@
                         </div>
                     </div>
                     <div id="screen">
-                      <div class="content">
-                        <h3 class="title">Ready?</h3>
-                        <div class="clock">
-                          <label for="toggle">Activate</label>
-                          <input type="checkbox" id="toggle" style="display:none">
-                          <span id="stopwatch">
-                            <span class="top"></span>
-                            <span class="hand"></span>
-                          </span>
+                        <div class="content">
+                            <div class="instructions">
+                                <h3 class="title">How To Play:</h3>
+                                <ul>
+                                    <li>Once all players are ready, a drawer will be randomly selected, and the game will begin!</li>
+                                    <li>The drawer will choose a category, then will be randomly assigned an item to draw from within the category.</li>
+                                    <li>All other players will watch what is being drawn, and lock in their answers when they think they know what is being drawn</li>
+                                    <li>Points are given for correct answers, as well as bonus points for being the first one to correctly guess!</li>
+                                    <li>When the round is over, a new drawer will be randomly choosen, and the game will restart!</li>
+                                </ul>
+                            </div>
+                            <div class="joinedPlayers">
+                                <h3>Players in room <span class="roomName"></span>:</h3>
+                                <ul id="gameLobby"></ul>
+                            </div>
+                            <div class="lobbyActionButtons">
+                                <button id="readyButton" type="button" class="btn btn-success">I'm Ready!</button>
+                                <button id="spectateButton" type="button" class="btn btn-warning">Just watch</button>
+                                <button id="startGame" type="button" class="btn btn-danger">Start Game!</button>
+                            </div>
                         </div>
-                        <div class="time">10 seconds....</div>
-                        <button id="startGame">Start Game</button>
-                      </div>
                     </div>
                     <canvas id="canvas"></canvas>
                     <!-- CARD TABLE -->
                     <div id="table"></div>
               </div>
-              
+
               <!-- CHAT COLUMN -->
               <div class="col-sm-4 col-md-3" id="chatColumn">
                   <div class="messages" readonly></div>

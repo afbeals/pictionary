@@ -122,196 +122,156 @@
 
     #screen{
         position: absolute;
-        width: 500px;
-        height: 500px;
-        background: rgba(74, 167, 195, 0.6);
-        display: inline-grid;
-        z-index: 20;
-        .content{
-            margin: 0 auto;
-            display: inline-grid;
-            align-items: center;
-            .title{
-                color: #4e4d4d;
-                text-shadow: 1px 1px #c0bdbd;
-                font-size: 3em;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0 15px;
+        z-index: 99;
+
+        .content {
+            background-color: cornflowerblue;
+            border: 1px solid black;
+            height: 500px;
+            padding: 10px;
+
+            &:after {
+                display: block;
+                content:"";
+                clear: both;
             }
-            button{
-                border: 1px solid white;
-                border-radius: 5px;
-                box-shadow: 1px 1px 5px #9f9f9f;
-                padding: 9px;
+
+            .instructions {
+                display: block;
+                width: 65%;
+                float: left;
                 color: white;
-                text-shadow: 1px 1px black;
-                text-transform: capitalize;
+                padding: 0 5px;
+
+                h3 {
+                    font-size: 34px;
+                    text-shadow: 1px 1px 1px #313131;
+                    border-bottom: 1px solid white;
+                    text-align: center;
+                    margin: 0 0 10px 0;
+                }
+                ul {
+                    list-style: none;
+                    padding: 0;
+
+                    li {
+                        list-style-type: none;
+                        font-size: 18px;
+                        margin-bottom: 10px;
+                        text-shadow: 1px 1px 1px #313131;
+                    }
+                }
             }
-            .time{
-                font-size: 3em;
-                margin-top:115px;
-                margin-bottom:-25px;
-            }
-            .clock{
-                #toggle {
-                    &:checked {
-                        &+#stopwatch {
-                            .top {
-                                -webkit-transform: translate(-50%, -36.33333px);
-                                transform: translate(-50%, -36.33333px);
-                                &:before {
-                                    height: 10px;
+            .joinedPlayers {
+                display: block;
+                width: 35%;
+                float: left;
+                color: white;
+
+                h3 {
+                    font-size: 34px;
+                    text-shadow: 1px 1px 1px #313131;
+                    border-bottom: 1px solid white;
+                    text-align: center;
+                    margin: 0 0 10px 0;
+                }
+                ul {
+                    list-style: none;
+                    padding: 0;
+                    background-color: cornflowerblue;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    padding-bottom: 30px;
+                    min-width: 280px;
+
+                    li {
+                        list-style-type: none;
+                        margin: 5px;
+                        border-bottom: 1px solid black;
+                        padding: 5px 0;
+
+                        &:after {
+                            display: block;
+                            content:"";
+                            clear: both;
+                        }
+
+                        &.loading .userStatus .loading_dots { display: inline-block; }
+                        &.readyToPlay .userStatus .readyToPlay { display: inline-block; }
+                        &.spectating .userStatus .spectating  { display: inline-block; }
+
+                        .shownUserName {
+                            float: left;
+                            display: block;
+                            width: 50%;
+                            font-size: 24px;
+                            text-shadow: 1px 1px #313131;
+                        }
+                        .userStatus {
+                            float: left;
+                            display: block;
+                            width: 50%;
+                            text-align: right;
+
+                            .loading_dots {display: none; }
+                            .readyToPlay {
+                                display:none;
+                                background-color: rgba(0,0,0,0.2);
+                                border-radius: 5px;
+                                font-size: 20px;
+                                line-height: 1;
+                                padding: 5px;
+                                width: auto;
+                                margin: 0;
+
+                                .statusText,
+                                .statusIcon {
+                                    color: #67ff5b;
                                 }
-                                &:after {
-                                    height: 10px;
+                             }
+                            .spectating {
+                                display: none;
+                                background-color: rgba(0,0,0,0.2);
+                                border-radius: 5px;
+                                font-size: 20px;
+                                line-height: 1;
+                                padding: 5px;
+                                width: auto;
+                                margin: 0;
+
+                                .statusText,
+                                .statusIcon {
+                                    color: #e8ff5b;
                                 }
                             }
-                            .hand {
-                                -webkit-animation-play-state: running;
-                                animation-play-state: running;
-                            }
                         }
-                    }
-                }
-                /*
-                label {
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    -webkit-transform: translate(-250px, -50%);
-                    transform: translate(-250px, -50%);
-                    display: inline-block;
-                    border: 2px solid #333;
-                    font-family: @font_family_1;
-                    padding: 10px 15px;
-                    border-radius: 10px;
-                    color: @color_1;
-                    background: rgba(255, 255, 255, 0.1);
-                    &:active {
-                        padding: 12px 15px 8px 15px;
-                        background: rgba(255, 255, 255, 0.2);
-                    }
-                }
-                */
-                #stopwatch {
-                    display: inline-block;
-                    background: #333;
-                    content: "";
-                    position: absolute;
-                    width: 25%;
-                    height: 25%;
-                    background: transparent;
-                    border-radius: 50%;
-                    border: 10px solid #333;
-                    left: 50%;
-                    top: 50%;
-                    -webkit-transform: translate(-50%, -50%);
-                    transform: translate(-50%, -50%);
-                    &:before {
-                        display: inline-block;
-                        background: #333;
-                        content: "";
-                        position: absolute;
-                    }
-                    &:after {
-                        //display: inline-block;
-                        display:none;
-                        background: #333;
-                        content: "";
-                        position: absolute;
-                        width: 10px;
-                        height: 20px;
-                        border-top-left-radius: 5px;
-                        border-top-right-radius: 5px;
-                        -webkit-transform: translate(90px, -15px) rotate(35deg);
-                        transform: translate(90px, -15px) rotate(35deg);
-                    }
-                    * {
-                        display: inline-block;
-                        background: #333;
-                        content: "";
-                        position: absolute;
-                        &:before {
-                            display: inline-block;
-                            background: #333;
-                            content: "";
-                            position: absolute;
-                        }
-                        &:after {
-                            display: inline-block;
-                            background: #333;
-                            content: "";
-                            position: absolute;
-                        }
-                    }
-                    .top {
-                        width: 35%;
-                        height: 5%;
-                        left: 50%;
-                        top: 20%;
-                        -webkit-transform: translate(-50%, -50px);
-                        transform: translate(-50%, -50px);
-                        border-radius: 6.66667px;
-                        -webkit-border-top-left-radius: 10px;
-                        -webkit-border-top-right-radius: 10px;
-                        -moz-border-radius-topleft: 10px;
-                        -moz-border-radius-topright: 10px;
-                        border-top-left-radius: 10px;
-                        border-top-right-radius: 10px;
-                        -webkit-transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                        transition: -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                        transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                        transition: transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045), -webkit-transform 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                        &:before {
-                            width: 13%;
-                            height: 20px;
-                            background: #333;
-                            left: 50%;
-                            top: 1px;
-                            -webkit-transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                            transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                            -webkit-transform: translate(-200%, 0);
-                            transform: translate(-200%, 0);
-                        }
-                        &:after {
-                            width: 13%;
-                            height: 20px;
-                            background: #333;
-                            left: 50%;
-                            top: 1px;
-                            -webkit-transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                            transition: height 400ms cubic-bezier(0.25, -1, 0.735, 0.045);
-                            -webkit-transform: translate(100%, 0);
-                            transform: translate(100%, 0);
-                        }
-                    }
-                    .hand {
-                        width: 5px;
-                        height: 100px;
-                        right: 140px;
-                        background: transparent;
-                        -webkit-transform: translate(90px, 0px);
-                        transform: translate(90px, 0px);
-                        -webkit-animation: rotating 10s linear infinite;
-                        animation: rotating 10s linear infinite;
-                        -webkit-animation-delay: 400ms;
-                        animation-delay: 400ms;
-                        -webkit-animation-play-state: paused;
-                        animation-play-state: paused;
-                        &:after {
-                            width: 5px;
-                            height: 45px;
-                            background: #333;
-                            border-radius: 10px;
-                            -webkit-transform: translateY(10px);
-                            transform: translateY(10px);
-                        }
+
                     }
                 }
             }
+            .lobbyActionButtons {
+                display: block;
+                width: 100%;
+                text-align: center;
+                clear: both;
+
+                button {
+                    font-size: 24px;
+                    margin: 0 20px;
+                }
+                #startGame {display: none; }
+
+            }
+
         }
     }
-    
-    
-    
+
+
+
 
     // ==== CHAT STYLES =====
     #chatColumn {
@@ -367,3 +327,70 @@
         }
     }
 }
+
+// ==== animation loading dots ====
+.loading_dots {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.3);
+    font-size: 24px;
+    line-height: 1;
+    padding: 0 10px 5px 10px;
+    width: 80px;
+    margin: 0;
+    display: inline;
+}
+
+.loading_dots span {
+    line-height: 1;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: inset 0 0 1px rgba(0,0,0,0.3);
+    display: inline-block;
+    height: .6em;
+    width: .6em;
+    -webkit-animation: loading_dots .8s linear infinite;
+    -moz-animation: loading_dots .8s linear infinite;
+    -ms-animation: loading_dots .8s linear infinite;
+    animation: loading_dots .8s linear infinite;
+}
+  .loading_dots span:nth-child(2) {
+    -webkit-animation-delay:  0.2s;
+    -moz-animation-delay:     0.2s;
+    -ms-animation-delay:      0.2s;
+    animation-delay:          0.2s;
+  }
+  .loading_dots span:nth-child(1) {
+    -webkit-animation-delay:  0.4s;
+    -moz-animation-delay:     0.4s;
+    -ms-animation-delay:      0.4s;
+    animation-delay:            0.4s;
+  }
+
+/*
+Define the animation for every efing vendor prefix
+*/
+@-webkit-keyframes loading_dots {
+  0% { background: transparent; }
+  50% { background: #E4E4E4; }
+  100% { background: transparent; }
+}
+
+@-moz-keyframes loading_dots {
+  0% { background: transparent; }
+  50% { background: #E4E4E4; }
+  100% { background: transparent; }
+}
+
+@-ms-keyframes loading_dots {
+  0% { background: transparent; }
+  50% { background: #E4E4E4; }
+  100% { background: transparent; }
+}
+
+@keyframes loading_dots {
+  0% { background: transparent; }
+  50% { background: #E4E4E4; }
+  100% { background: transparent; }
+}
+body.roomLeader .stage #screen .content .lobbyActionButtons #startGame {display: inline-block; }

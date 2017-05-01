@@ -1,7 +1,6 @@
 (function(){
 	//on click functionality
 	document.body.addEventListener('click',(e) => {
-		console.log(e);
 		//flip functionality for card 
 		if(e.target && e.target.parentNode.classList.contains('cardInner') && e.target.parentNode.classList.contains('flipped')){
 			e.target.parentNode.classList.remove('flipped');

@@ -58,58 +58,68 @@ io.sockets.on('connection',function(socket){
 	currentRooms.CurrentNumOfPlayers;
 	//on connect, should emit to client to fire modal instead
 	socket.emit('selectRoom');
-	//upon selection of join a room
-	socket.on('joinRoom',(roomName)=>{
-		//join room
-		socket.join(roomName);
-		//fire any game joining functions needed to client
-		//send over socket.id to store client side
-		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
-		socket.emit('roomJoined',{roomName: roomName,id : socketId});
-		//update game object for all in room
-		//io.in(roomName).emit('getPlayers', 'object');
-	});
-	//upon selection of create a room
-	socket.on('createRoom', (roomName) => {
-		let roomHash = roomIdGenerator(roomName);
-		//create room
+
+	// Create room
+	socket.on('createRoom', (obj) => {
+		let roomHash = roomIdGenerator(obj.roomName);
 		socket.join(roomHash);
-		//fire any game creation functions needed to client
-		//send over socket.id to store client side
 		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
-		socket.emit('roomCreated',{roomName: roomHash,id : socketId});
-		//get 
-		//update game object for all in room;
-		//io.in(roomName).emit('getPlayers', 'object');
+		socket.emit('roomCreated',{roomName: roomHash, id: socketId, username: obj.playerName});
 	});
-	//leave room
+
+	// Join existing room
+	socket.on('joinRoom',(obj)=>{
+		socket.join(obj.roomName);
+		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
+		console.log(Object.keys(io.sockets.sockets))
+		socket.emit('roomJoined', {roomName: obj.roomName, id: socketId, name: obj.name});
+		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, id: socketId, name: obj.name});
+	});
+
+	// leave room
 	socket.on('leaveRoom',(roomName)=>{
-		//leave room
 		socket.leave(roomName);
-		//fire modal asking if they'd like to join another room;
-		socket.emit('chooseAnotherRoom');
+		// socket.emit('chooseAnotherRoom');
 	});
-	//send message to other clients letting know game will start soon:
+
+	// send message to other clients letting know game will start soon:
 	socket.on('setupGame',(roomName)=>{
-		//send to all clients in room except sender;
 		socket.broadcast.in(roomName).emit('settingUpGame', 'Getting ready to start the game!');
 	});
-	//choose from decks and send back to drawer
+
+	// choose from decks and send back to drawer
 	socket.on('getDeck',(data)=>{
-		//send the array back to all clients;
 		io.in(data.roomName).emit('deckRecieved', decks[Object.keys(decks)[data.deckNumber]]);
 	});
-	//tell other clients in room to begin countdown timer
+
+	// tell other clients in room to begin countdown timer
 	socket.on('beginGame', (data) => {
-		//send answer to all but sender
 		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
 	});
+
+
+// ==== Pre Game Lobby ====
+
+	// send joined player list of already existing players
+	socket.on('sendListOfPlayers', (obj) => {
+		socket.to(obj.id).emit('getExistingPlayers', {list: obj.list})
+	});
+
+	socket.on('playerReadyToPlay',(obj) => {
+		socket.to(obj.roomName).emit('playerIsReady', obj);
+	});
+
+	socket.on('playerReadyToSpectate',(obj) => {
+		socket.to(obj.roomName).emit('playerIsSpectating', obj);
+	});
+
+
+
+
 
 //------------------------------------------------------------------------------------------
 	// emit.setup will transfer chatHistory and any setup data for newcomers
 	socket.emit('setup', {"chatHistory":chatHistory});
-	//broadcast to all to update
-	//socket.broadcast('setupGame');
 
 	// once a connection with certain name:
 	socket.on('chatUpdate', function(data){
@@ -138,7 +148,8 @@ io.sockets.on('connection',function(socket){
 		io.to(testingThis).emit('messge','object');
 	})
 
-// == Helpers 
+
+// == Helpers
 	//send back to connected clients
 	socket.emit("identifier_for_message", {})
 
@@ -147,11 +158,8 @@ io.sockets.on('connection',function(socket){
 
 	// socket disconect
 	socket.on('disconnect',function(){
-		//decrease player count:
 		--currentRooms.numOfPlayers;
-		// show others that user has left
 		console.log('LEFT!')
 		socket.emit('userDC', {"msg": 'User has left the game.'});
-	})
-
+	});
 });

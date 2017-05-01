@@ -1,3 +1,5 @@
+
+
 (function(){
     var intro         = $('.intro'),
         usernameInput = $('.intro input[name="username"]'),
@@ -21,7 +23,7 @@
         } else {
             enterGame = true;
         }
-        
+
         PIC.user.username = username;
         PIC.user.joinGame = gameID;
 
