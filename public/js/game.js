@@ -72,7 +72,31 @@ let endGame;
 // build out front end table based on chosen deck
 createTable = (cards) => {
 	cards.forEach((e, i) => {
-	    tableString +=`<div class="card"><div class="cardInner active"><div class="front"><span class="topL"></span><span class="topR"></span><span class="bottomL"></span><span class="bottomR"></span>${e}</div><div class="back"><h3>${e}</h3><button class="notPossible"><i class="fa fa-times" aria-hidden="true"></i></button><button class="Possible"><i class="fa fa-exclamation" aria-hidden="true"></i></button><button class="Final"><i class="fa fa-check" aria-hidden="true"></i></button></div></div></div>`
+	    tableString +=`
+		<div class="card">
+			<div class="cardInner active">
+				<div class="front">
+					<span class="topL"></span>
+					<span class="topR"></span>
+					<span class="bottomL"></span>
+					<span class="bottomR"></span>
+					${e}
+				</div>
+				<div class="back">
+					<h3>${e}</h3>
+					<button class="notPossible">
+						<i aria-hidden="true" class="fa fa-times"></i>
+					</button>
+					<button class="Possible">
+						<i aria-hidden="true" class="fa fa-exclamation"></i>
+					</button>
+					<button class="Final">
+						<i aria-hidden="true" class="fa fa-check"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+		`
 	});
 	table.innerHTML = tableString;
 }
@@ -92,6 +116,8 @@ getDeck = (min,max,callback) => {
   max = Math.floor(max);
   let deckNumber = Math.floor(Math.random() * (max - min)) + min;
   socket.emit('getDeck',{deckNumber: deckNumber,roomName: player.roomName});
+  console.log('test');
+  console.log({deckNumber: deckNumber,roomName: player.roomName});
 }
 countdown = (time,callback) => {
 	for(let i = time; i > 0; --i) {
@@ -141,7 +167,7 @@ showDrawingTools = () => {
 	if (player.draw){document.body.classList.add('drawing')};
 }
 
-
+socket.on('assignID', (id) => playerPayload.id = id );
 
 
 // == start game ==
@@ -179,6 +205,7 @@ socket.on('deckRecieved',(data) => {
 		//if not drawer, create table from cards
 		//create table to display options
 		createTable(game.deck);
+		console.log('test');
 	}
 });
 
@@ -190,17 +217,7 @@ NGButton.addEventListener('click', (e) =>{
 	socket.emit('createRoom',{'roomName':roomName,'playerName':playerName});
 });
 
-let JRButton = document.getElementById('joinGameBtn');
-JRButton.addEventListener('click', (e) =>{
-	let roomName = document.getElementsByName('gameId')[0].value;
-	let playerName = document.getElementsByName('username')[0].value;
-	playerPayload.name = playerName;
-	playerPayload.roomName = roomName;
-	socket.emit('joinRoom',playerPayload);
-});
-
 socket.on('roomCreated',(msg) => {
-	playerPayload.id = msg.id;
 	playerPayload.roomName = msg.roomName;
 	document.getElementById('gameId').innerHTML = `${msg.roomName}`;
 	player.draw = true;
@@ -210,9 +227,19 @@ socket.on('roomCreated',(msg) => {
 	showDrawingTools();
 	addToPlayerList(playerPayload);
 	drawGameLobby();
+	console.log(playerPayload);
 });
 
-socket.on('roomJoined',(obj) => { playerPayload.id = obj.id; });
+
+let JRButton = document.getElementById('joinGameBtn');
+JRButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementsByName('gameId')[0].value;
+	let playerName = document.getElementsByName('username')[0].value;
+	playerPayload.name = playerName;
+	playerPayload.roomName = roomName;
+	socket.emit('joinRoom',playerPayload);
+	console.log(playerPayload);
+});
 
 socket.on('newPlayerJoinedRoom', (obj) => {
 	addToPlayerList(obj);

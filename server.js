@@ -52,12 +52,14 @@ const roomIdGenerator = function(roomName){
   return roomName ;
 }
 io.sockets.on('connection',function(socket){
-//starting game
-	//incr player count:
 	++currentRooms.numOfPlayers;
 	currentRooms.CurrentNumOfPlayers;
-	//on connect, should emit to client to fire modal instead
-	socket.emit('selectRoom');
+
+	// assign id immediately! 
+	socket.emit('assignID', socket.id);
+
+// ==== BEFORE GAME ====
+// =====================
 
 	// Create room
 	socket.on('createRoom', (obj) => {
@@ -76,30 +78,6 @@ io.sockets.on('connection',function(socket){
 		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, id: socketId, name: obj.name});
 	});
 
-	// leave room
-	socket.on('leaveRoom',(roomName)=>{
-		socket.leave(roomName);
-		// socket.emit('chooseAnotherRoom');
-	});
-
-	// send message to other clients letting know game will start soon:
-	socket.on('setupGame',(roomName)=>{
-		socket.broadcast.in(roomName).emit('settingUpGame', 'Getting ready to start the game!');
-	});
-
-	// choose from decks and send back to drawer
-	socket.on('getDeck',(data)=>{
-		io.in(data.roomName).emit('deckRecieved', decks[Object.keys(decks)[data.deckNumber]]);
-	});
-
-	// tell other clients in room to begin countdown timer
-	socket.on('beginGame', (data) => {
-		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
-	});
-
-
-// ==== Pre Game Lobby ====
-
 	// send joined player list of already existing players
 	socket.on('sendListOfPlayers', (obj) => {
 		socket.to(obj.id).emit('getExistingPlayers', {list: obj.list})
@@ -117,7 +95,24 @@ io.sockets.on('connection',function(socket){
 
 
 
-//------------------------------------------------------------------------------------------
+// ==== DURING GAME ====
+// =====================
+
+	// send message to other clients letting know game will start soon:
+	socket.on('setupGame',(roomName)=>{
+		socket.broadcast.in(roomName).emit('settingUpGame', 'Getting ready to start the game!');
+	});
+
+	// choose from decks and send back to drawer
+	socket.on('getDeck',(data)=>{
+		io.in(data.roomName).emit('deckRecieved', decks[Object.keys(decks)[data.deckNumber]]);
+	});
+
+	// tell other clients in room to begin countdown timer
+	socket.on('beginGame', (data) => {
+		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
+	});
+
 	// emit.setup will transfer chatHistory and any setup data for newcomers
 	socket.emit('setup', {"chatHistory":chatHistory});
 
@@ -140,6 +135,27 @@ io.sockets.on('connection',function(socket){
 
 	});
 
+
+
+// ==== AFTER GAME ====
+// =====================
+
+	// leave room
+	socket.on('leaveRoom',(roomName)=>{
+		socket.leave(roomName);
+		// socket.emit('chooseAnotherRoom');
+	});
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------
+
+
 	socket.on('test',(roomName)=>{
 		socket.join(roomName);
 		var clients = io.sockets.adapter.rooms[roomName];
@@ -150,10 +166,10 @@ io.sockets.on('connection',function(socket){
 
 
 // == Helpers
-	//send back to connected clients
+	// send back to connected clients
 	socket.emit("identifier_for_message", {})
 
-	//send back to everyone except newly connected
+	// send back to everyone except newly connected
 	socket.broadcast.emit("identifier_for_message", {});
 
 	// socket disconect
