@@ -55,7 +55,7 @@ io.sockets.on('connection',function(socket){
 	++currentRooms.numOfPlayers;
 	currentRooms.CurrentNumOfPlayers;
 
-	// assign id immediately! 
+	// assign id immediately!
 	socket.emit('assignID', socket.id);
 
 // ==== BEFORE GAME ====
@@ -65,17 +65,14 @@ io.sockets.on('connection',function(socket){
 	socket.on('createRoom', (obj) => {
 		let roomHash = roomIdGenerator(obj.roomName);
 		socket.join(roomHash);
-		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
-		socket.emit('roomCreated',{roomName: roomHash, id: socketId, username: obj.playerName});
+		socket.emit('roomCreated',{roomName: roomHash, username: obj.playerName});
 	});
 
 	// Join existing room
 	socket.on('joinRoom',(obj)=>{
 		socket.join(obj.roomName);
-		let socketId = Object.keys(io.sockets.sockets)[Object.keys(io.sockets.sockets).length -1];
-		console.log(Object.keys(io.sockets.sockets))
 		socket.emit('roomJoined', {roomName: obj.roomName, id: socketId, name: obj.name});
-		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, id: socketId, name: obj.name});
+		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, name: obj.name});
 	});
 
 	// send joined player list of already existing players
