@@ -58,7 +58,7 @@ io.sockets.on('connection',function(socket){
 	// assign id immediately!
 	socket.emit('assignID', socket.id);
 
-// ==== BEFORE GAME ====
+// ==== BEFORE GAME ====local
 // =====================
 
 	// Create room
@@ -71,8 +71,7 @@ io.sockets.on('connection',function(socket){
 	// Join existing room
 	socket.on('joinRoom',(obj)=>{
 		socket.join(obj.roomName);
-		socket.emit('roomJoined', {roomName: obj.roomName, id: socketId, name: obj.name});
-		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, name: obj.name});
+		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, name: obj.name, id: obj.id});
 	});
 
 	// send joined player list of already existing players
@@ -96,8 +95,9 @@ io.sockets.on('connection',function(socket){
 // =====================
 
 	// send message to other clients letting know game will start soon:
-	socket.on('setupGame',(roomName)=>{
-		socket.broadcast.in(roomName).emit('settingUpGame', 'Getting ready to start the game!');
+	socket.on('gameCountDown',(obj)=>{
+		console.log(obj);
+		io.in(obj.roomName).emit('beginCountDown', '');
 	});
 
 	// choose from decks and send back to drawer

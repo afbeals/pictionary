@@ -36,7 +36,6 @@ class Player extends PlayerPayload{
 
 let player, playerPayload;
 const createPlayer = (name,roomName,id) => {
-
    playerPayload  = new PlayerPayload(name,roomName,id);
    player = new Player(name,roomName,id);
 }
@@ -71,6 +70,7 @@ let endGame;
 // == card functionality
 // build out front end table based on chosen deck
 createTable = (cards) => {
+	console.log('test');
 	cards.forEach((e, i) => {
 	    tableString +=`
 		<div class="card">
@@ -116,8 +116,6 @@ getDeck = (min,max,callback) => {
   max = Math.floor(max);
   let deckNumber = Math.floor(Math.random() * (max - min)) + min;
   socket.emit('getDeck',{deckNumber: deckNumber,roomName: player.roomName});
-  console.log('test');
-  console.log({deckNumber: deckNumber,roomName: player.roomName});
 }
 countdown = (time,callback) => {
 	for(let i = time; i > 0; --i) {
@@ -174,38 +172,54 @@ socket.on('assignID', (id) => playerPayload.id = id );
 
 const StrButton = document.getElementById('startGame');
 StrButton.addEventListener('click', (e) =>{
-	//emit player is getting ready to draw and get deck from server:
-	socket.emit('setupGame', player.roomName);
-	//call to server to receive deck
-	getDeck(0,4);
+	socket.emit('gameCountDown', playerPayload);
+
 });
 
 // == ready game ==
+
+function beginCountDown(){
+	document.body.classList.add('pregame-countdown');
+	// animations
+	$('.lobbyActionButtons').fadeOut(125, function(){
+		$('.gameCountdown').hide().removeClass('hidden').fadeIn(125);
+	});
+
+	var time = 5,
+		el = document.querySelector('#screen .content .pregame-countdown .pregame-time');
+	el.innerText = time + ' seconds';
+	var interval = setInterval(function(){
+		--time;
+		if (time > 1) {
+			el.innerText = time + ' seconds';
+		} else {
+			if (time === 0) {
+				clearInterval(interval);
+				socket.emit('startGame', playerPayload);
+				el.innerText = time + ' seconds';
+				$('#screen').fadeOut(125);
+				getDeck(0,4);
+			} else {
+				el.innerText = time + ' second';
+			}
+		}
+	}, 1000)
+}
 
 
 
 
 
 //let client know game beginning soon:
-socket.on('settingUpGame',(message)=>{
-	//update to use modal
-	console.log(message);
-});
+socket.on('beginCountDown',()=> { console.log('test'); beginCountDown() });
 
 //receive deck after getDeck() call
 socket.on('deckRecieved',(data) => {
-	//store chosen deck
 	game.deck = data;
-	//if drawer choose answer, (optional:) and send answer to clients
-	//create table from deck
 	if(player.draw == true){
-		//choose card from deck
 		chooseCard(0,game.deck.length - 1);
 	}else if(player.draw == false && player.spectate == false){
-		//if not drawer, create table from cards
-		//create table to display options
 		createTable(game.deck);
-		console.log('test');
 	}
 });
 
@@ -218,7 +232,7 @@ NGButton.addEventListener('click', (e) =>{
 });
 
 socket.on('roomCreated',(msg) => {
-	playerPayload.roomName = msg.roomName;
+	createPlayer(playerPayload.name, msg.roomName, playerPayload.id);
 	document.getElementById('gameId').innerHTML = `${msg.roomName}`;
 	player.draw = true;
 	player.currentDrawer = true;
@@ -227,7 +241,6 @@ socket.on('roomCreated',(msg) => {
 	showDrawingTools();
 	addToPlayerList(playerPayload);
 	drawGameLobby();
-	console.log(playerPayload);
 });
 
 
@@ -235,10 +248,8 @@ let JRButton = document.getElementById('joinGameBtn');
 JRButton.addEventListener('click', (e) =>{
 	let roomName = document.getElementsByName('gameId')[0].value;
 	let playerName = document.getElementsByName('username')[0].value;
-	playerPayload.name = playerName;
-	playerPayload.roomName = roomName;
+	createPlayer(playerName, roomName, playerPayload.id);
 	socket.emit('joinRoom',playerPayload);
-	console.log(playerPayload);
 });
 
 socket.on('newPlayerJoinedRoom', (obj) => {
