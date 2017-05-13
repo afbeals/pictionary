@@ -322,6 +322,10 @@ body {
   background: radial-gradient(ellipse at center, #f6e6b4 0%, #eaa959 100%);
 }
 
+#canvas{
+	background:white;
+}
+
 .stage #chatColumn .messages{
 	background:white;
 }
