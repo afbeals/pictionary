@@ -2,32 +2,33 @@
 	//on click functionality
 	document.body.addEventListener('click',(e) => {
 		//flip functionality for card 
-		if(e.target && e.target.parentNode.classList.contains('cardInner') && e.target.parentNode.classList.contains('flipped')){
-			e.target.parentNode.classList.remove('flipped');
-		} else if (e.target && e.target.parentNode.classList.contains('cardInner') && e.target.parentNode.classList.contains('active')){
-			e.target.parentNode.classList.add('flipped');
+		let t = e.target,pN = t.parentNode,cL = pN.classList;
+		if(t && cL.contains('cardInner') && cL.contains('flipped')){
+			cL.remove('flipped');
+		} else if (t && cL.contains('cardInner') && cL.contains('active') && !(cL.contains('selected'))){
+			cL.add('flipped');
 		}
 		//functionality for card buttons
-		if(e.target && e.target.classList.contains('Final') || e.target.classList.contains('fa-check')){
-			e.target.closest('.cardInner').classList.add('selected');
+		if(t && e.target.classList.contains('Final') || e.target.classList.contains('fa-check')){
+			t.closest('.cardInner').classList.add('selected');
 			setTimeout(()=>{
 				let cardSelected = document.querySelectorAll('.cardInner');
 				for(let x = 0;x<cardSelected.length;++x){
 					//add click event to all cards
 					if(!cardSelected[x].classList.contains('selected')){
 						cardSelected[x].classList.add('dis');
-						cardSelected[x].classList.remove('active');
+						cardSelected[x].classList.remove('active','caution');
 						(cardSelected[x].classList.contains('flipped')) ? cardSelected[x].classList.remove('flipped') : null
 					}
 				};
-				e.target.closest('.cardInner').classList.remove('flipped')}
+				t.closest('.cardInner').classList.remove('flipped')}
 				,250);
-		} else if (e.target && e.target.classList.contains('Possible') || e.target.classList.contains('fa-exclamation')){
-			e.target.closest('.cardInner').classList.add('caution');
-			setTimeout(()=>{e.target.closest('.cardInner').classList.remove('flipped')},500);
-		} else if (e.target && e.target.classList.contains('notPossible') || e.target.classList.contains('fa-times')){
-			e.target.closest('.cardInner').classList.add('dis');
-			setTimeout(()=>{e.target.closest('.cardInner').classList.remove('flipped')},500);
+		} else if (t && t.classList.contains('Possible') || t.classList.contains('fa-exclamation')){
+			t.closest('.cardInner').classList.add('caution');
+			setTimeout(()=>{t.closest('.cardInner').classList.remove('flipped')},500);
+		} else if (t && t.classList.contains('notPossible') || t.classList.contains('fa-times')){
+			t.closest('.cardInner').classList.add('dis');
+			setTimeout(()=>{t.closest('.cardInner').classList.remove('flipped')},500);
 		}
 	});
 	/*

@@ -36,7 +36,7 @@ class Player extends PlayerPayload{
 
 let player, playerPayload;
 const createPlayer = (name,roomName,id) => {
-   playerPayload  = new PlayerPayload(name,roomName,id);
+   playerPayload = new PlayerPayload(name,roomName,id);
    player = new Player(name,roomName,id);
 }
 createPlayer();
@@ -46,8 +46,6 @@ createPlayer();
 const table = document.getElementById('table');
 const game = {
 				score : 0,
-				//totalPlayers: 0,
-				//readyPlayers: 0,
 				players : [],
 				cardAn: '',
 				timer: 60,
@@ -62,15 +60,14 @@ let timer;
 let beginGame;
 let showDrawingTools;
 let countdown;
-
-
+let messageColumn;
 let endGame;
-//-- need to set up end game / need to set up players picking cards
+let showAnswer;
+let createCanvas;
 
 // == card functionality
 // build out front end table based on chosen deck
 createTable = (cards) => {
-	console.log('test');
 	cards.forEach((e, i) => {
 	    tableString +=`
 		<div class="card">
@@ -101,12 +98,34 @@ createTable = (cards) => {
 	table.innerHTML = tableString;
 }
 
+showAnswer = (ans) =>{
+	console.log(ans);
+	let answerString = `<div class="answer">
+							<div class="animate">
+								<p class="step1">
+									you're drawing...
+								</p>
+								<p class="step2">
+									${ans}
+								</p>
+							</div>
+							
+        					<div class="left">
+					            <p>Drawing</p>
+					        </div>
+					        <div class="right">
+					            <p>${ans}</p>
+					        </div>
+					    </div>`;
+	table.innerHTML = answerString;
+}
+
 chooseCard = (min,max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
-  //begin the game
-  beginGame(game.cardAn);
+  showAnswer(game.cardAn);
+  //beginGame(game.cardAn);
   socket.emit('beginGame',{cardAn: game.cardAn, roomName: player.roomName});
 }
 
@@ -115,7 +134,7 @@ getDeck = (min,max,callback) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   let deckNumber = Math.floor(Math.random() * (max - min)) + min;
-  socket.emit('getDeck',{deckNumber: deckNumber,roomName: player.roomName});
+  socket.emit('getDeck',{deckNumber: deckNumber,roomName: playerPayload.roomName});
 }
 countdown = (time,callback) => {
 	for(let i = time; i > 0; --i) {
@@ -173,7 +192,7 @@ socket.on('assignID', (id) => playerPayload.id = id );
 const StrButton = document.getElementById('startGame');
 StrButton.addEventListener('click', (e) =>{
 	socket.emit('gameCountDown', playerPayload);
-
+	createCanvas();
 });
 
 // == ready game ==
@@ -198,7 +217,7 @@ function beginCountDown(){
 				socket.emit('startGame', playerPayload);
 				el.innerText = time + ' seconds';
 				$('#screen').fadeOut(125);
-				getDeck(0,4);
+				if(player.leader){getDeck(0,4)};
 			} else {
 				el.innerText = time + ' second';
 			}
@@ -256,15 +275,15 @@ socket.on('newPlayerJoinedRoom', (obj) => {
 	addToPlayerList(obj);
 	drawGameLobby();
 	if (player.leader){
-		socket.emit('sendListOfPlayers',{list: playersList, room: obj.roomName, id: obj.id});
+		socket.emit('sendListOfPlayers',{list: playersList, room: obj.roomName, id: obj.id, chatHistory: messageColumn.innerHTML});
 	}
 });
 
 socket.on('getExistingPlayers', (obj) => {
 	overWritePlayersList(obj.list);
 	drawGameLobby();
+	messageColumn.innerHTML = obj.currentChat;
 });
-
 
 socket.on('chooseAnotherRoom',()=>{
 	//fire modal that allows client to emit joinRoom
@@ -317,6 +336,7 @@ const readyBtn = document.getElementById('readyButton');
 readyBtn.addEventListener('click', () => {
 	playerReady();
 	socket.emit('playerReadyToPlay', playerPayload);
+	createCanvas();
 });
 function playerReady(event, id) {
 	if (!id) { id = playerPayload.id; }
@@ -330,6 +350,7 @@ const spectatingBtn = document.getElementById('spectateButton');
 spectatingBtn.addEventListener('click', () => {
 	playerSpectating();
 	socket.emit('playerReadyToSpectate', playerPayload);
+	createCanvas();
 });
 function playerSpectating(event, id){
 	if (!id) { id = playerPayload.id; }

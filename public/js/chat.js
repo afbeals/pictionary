@@ -2,7 +2,7 @@
     'use strict'
     // == variables
     var chatColumn = document.getElementById('chatColumn');
-    var messageColumn = chatColumn.querySelector('.messages');
+    messageColumn = chatColumn.querySelector('.messages');
     var chatForm = chatColumn.querySelector('form');
     var message = chatForm.querySelector('[name="chatInput"]');
     var welcomeMessage = null; // not yet created
@@ -10,8 +10,8 @@
     // == event listeners
     chatForm.addEventListener('submit', submitChat);
     chatForm.addEventListener('onsubmit', submitChat);
+    message.addEventListener('keyup',(e)=>{if(e.keyCode == 13){submitChat(e)}});
     socket.on('chatUpdate', function(data){ printMessage(data); });
-    socket.on('setup', function(data){ printHistory(data); });
 
     // == setup
     if (welcomeMessage === null) {
@@ -34,7 +34,7 @@
 
         // send server username, message, and copy of current chat
         currentChat = messageColumn.innerHTML;
-        socket.emit('chatUpdate',{"username":name, "userMessage":msg, "currentChat":currentChat});
+        socket.emit('chatUpdate',{"username":name, "userMessage":msg, "currentChat":currentChat, 'player':playerPayload});
     }
 
     function printMessage(obj){
@@ -56,12 +56,6 @@
             messageColumn.scrollTop = messageColumn.scrollHeight;
         }
 
-    }
-
-    function printHistory(data){
-        if (data.chatHistory.length > 0){
-            messageColumn.innerHTML = data.chatHistory;
-        }
     }
 
     // return PIC.chat = {

@@ -5,6 +5,77 @@
 #table{
   display:block;
   text-align: center;
+  position:relative;
+  .answer{
+    position: relative;
+    width: 50%;
+    background: #237dda;
+    border-radius: 5%;
+    overflow: hidden;
+    margin: 10px auto 20px auto;
+    .animate{
+      position: absolute;
+      display: inline-block;
+      height: 100%;
+      width: 100%;
+      z-index: 5;
+      left: 0;
+      background: #7fb986;
+      animation: showCard .5s forwards linear;
+      animation-delay: 6s;
+      .step1{
+        width: 100%;
+        margin-left: 0px;
+        transition: all 1s;
+        left: 0%;
+        position:absolute;
+        transform:translateX(100%);
+        animation: step2 2s forwards linear;
+        text-transform: capitalize;
+      }
+      .step2{
+        width: 100%;
+        margin-left: 0px;
+        transition: all 1s;
+        left: 0%;
+        position:absolute;
+        transform:translateX(100%);
+        animation: step2 2s forwards linear;
+        animation-delay: 3s;
+        text-transform: capitalize;
+      }
+    }
+    >div{
+      display: inline-block;
+      width: 49%;
+      height: 100%;
+      position:relative;
+      left:-35px;
+      &.left{
+        &:before{
+          content: " ";
+          border-top: 65px solid transparent;
+          border-bottom: 65px solid transparent;
+          border-left: 170px solid #da2323;
+          position: absolute;
+          height: 25%;
+          box-sizing: initial;
+        }
+      }
+      p{
+        position: relative;
+        z-index: 3;
+        display: inline-block;
+        font-size: 35px;
+        font-weight: 700;
+        color: #e5dfdf;
+        text-shadow: 1px 1px black;
+        margin-left: 20px;
+        padding: 55px 0px;
+        text-transform: capitalize;
+      }
+    }
+  }
   .card {
     width: 28%;
     height: auto;
@@ -119,12 +190,10 @@
       transform: rotateY(180deg);
     }
     &.dis{
-      .dis {
-        div {
-          background: rgb(160, 159, 159);
-          opacity: 0.5;
-          color: @color_3;
-        }
+      div {
+        background: rgb(160, 159, 159);
+        opacity: 0.5;
+        color: @color_3;
       }
     }
     &.caution{

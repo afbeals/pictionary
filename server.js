@@ -14,12 +14,11 @@ var server = app.listen(8000,function(){
 // ==== socket.io ====
 // https://github.com/socketio/socket.io/blob/master/docs/README.md
 var io = require('socket.io').listen(server);
-var chatHistory = '';
 const decks = {
 	animal: ['a','b','c','d','e'],
 	event: ['f','g','h','i','j'],
-	name: ['karina','allan','trevor'],
-	place: ['oregon','washington','california']
+	name: ['karina','allan','trevor','sophie','megan','haley','curtis','cleri'],
+	place: ['oregon','washington','california','montana','idaho','colorado']
 }
 const currentRooms = {
 	currentRooms : [],
@@ -76,7 +75,7 @@ io.sockets.on('connection',function(socket){
 
 	// send joined player list of already existing players
 	socket.on('sendListOfPlayers', (obj) => {
-		socket.to(obj.id).emit('getExistingPlayers', {list: obj.list})
+		socket.to(obj.id).emit('getExistingPlayers', {list: obj.list, currentChat: obj.chatHistory});
 	});
 
 	socket.on('playerReadyToPlay',(obj) => {
@@ -96,7 +95,6 @@ io.sockets.on('connection',function(socket){
 
 	// send message to other clients letting know game will start soon:
 	socket.on('gameCountDown',(obj)=>{
-		console.log(obj);
 		io.in(obj.roomName).emit('beginCountDown', '');
 	});
 
@@ -110,13 +108,11 @@ io.sockets.on('connection',function(socket){
 		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
 	});
 
-	// emit.setup will transfer chatHistory and any setup data for newcomers
-	socket.emit('setup', {"chatHistory":chatHistory});
-
 	// once a connection with certain name:
 	socket.on('chatUpdate', function(data){
 		chatHistory = data.currentChat; // maintain server-side copy of chat for newcomers
-		socket.broadcast.emit('chatUpdate', data);
+		//socket.broadcast.emit('chatUpdate', data);
+		socket.to(data.player.roomName).emit('chatUpdate', data);
 	});
 
 	socket.on('playerDrawing',function(package){
@@ -172,7 +168,6 @@ io.sockets.on('connection',function(socket){
 	// socket disconect
 	socket.on('disconnect',function(){
 		--currentRooms.numOfPlayers;
-		console.log('LEFT!')
 		socket.emit('userDC', {"msg": 'User has left the game.'});
 	});
 });

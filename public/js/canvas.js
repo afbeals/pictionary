@@ -1,5 +1,5 @@
 'use strict';
-(function(){
+createCanvas = function(){
         window.mouseDown = false; // !! global
         document.body.addEventListener('mousedown', () => mouseDown = true);
         document.body.addEventListener('mouseup', () => mouseDown = false);
@@ -127,4 +127,4 @@
 
     });
 
-}()) // end iife wrapper
+} // end iife wrapper
