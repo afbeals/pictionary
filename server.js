@@ -21,7 +21,7 @@ const decks = {
 	place: ['oregon','washington','california','montana','idaho','colorado']
 }
 const currentRooms = {
-	currentRooms : [],
+	rooms : {},
 	numOfPlayers : 0,
 
 	//remove all clients from room
@@ -63,13 +63,21 @@ io.sockets.on('connection',function(socket){
 	// Create room
 	socket.on('createRoom', (obj) => {
 		let roomHash = roomIdGenerator(obj.roomName);
-		socket.join(roomHash);
-		socket.emit('roomCreated',{roomName: roomHash, username: obj.playerName});
+		if(!currentRooms[roomHash]){
+			socket.join(roomHash);
+			currentRooms.rooms[socket.id] = roomHash;
+			//console.log(io.sockets.adapter.sids[socket.id],socket.id);
+			socket.emit('roomCreated',{roomName: roomHash, username: obj.playerName});	
+		}
+		else{
+			socket.emit('roomExists',{'msg':"please try that room again"});
+		}
 	});
 
 	// Join existing room
 	socket.on('joinRoom',(obj)=>{
 		socket.join(obj.roomName);
+		currentRooms.rooms[socket.id] = obj.roomName;
 		socket.to(obj.roomName).emit('newPlayerJoinedRoom', {roomName: obj.roomName, name: obj.name, id: obj.id});
 	});
 
@@ -105,7 +113,7 @@ io.sockets.on('connection',function(socket){
 
 	// tell other clients in room to begin countdown timer
 	socket.on('beginGame', (data) => {
-		socket.broadcast.in(data.roomName).emit('gameBegun',data.cardAn);
+		io.in(data.roomName).emit('gameBegun',data.cardAn);
 	});
 
 	// once a connection with certain name:
@@ -168,6 +176,8 @@ io.sockets.on('connection',function(socket){
 	// socket disconect
 	socket.on('disconnect',function(){
 		--currentRooms.numOfPlayers;
-		socket.emit('userDC', {"msg": 'User has left the game.'});
+		//console.log('afea',io.sockets.adapter.sids[socket.id],socket.id);
+		//socket.emit('userDC', {userId: socket.id});
+		socket.to(currentRooms.rooms[socket.id]).emit('userDC', {userId: socket.id});
 	});
 });

@@ -46,10 +46,12 @@ createPlayer();
 const table = document.getElementById('table');
 const game = {
 				score : 0,
-				players : [],
+				playersList : [],
+				hasntDrawn : [],
 				cardAn: '',
-				timer: 60,
-				deck : ''
+				timer: 10,
+				deck : '',
+				finalRound: false
 			}
 
 let tableString = "";
@@ -64,6 +66,7 @@ let messageColumn;
 let endGame;
 let showAnswer;
 let createCanvas;
+let nextRound;
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -99,7 +102,6 @@ createTable = (cards) => {
 }
 
 showAnswer = (ans) =>{
-	console.log(ans);
 	let answerString = `<div class="answer">
 							<div class="animate">
 								<p class="step1">
@@ -126,7 +128,7 @@ chooseCard = (min,max) => {
   game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
   showAnswer(game.cardAn);
   //beginGame(game.cardAn);
-  socket.emit('beginGame',{cardAn: game.cardAn, roomName: player.roomName});
+  socket.emit('beginGame',{cardAn: game.cardAn, roomName: playerPayload.roomName});
 }
 
 // select deck from server
@@ -137,23 +139,48 @@ getDeck = (min,max,callback) => {
   socket.emit('getDeck',{deckNumber: deckNumber,roomName: playerPayload.roomName});
 }
 countdown = (time,callback) => {
-	for(let i = time; i > 0; --i) {
-	    let int = setInterval(() => {
-	        //document.getElementById("modalTimer").innerHTML = "Game starts in " + i + "...";
-	        i-- || clearInterval(int); //document.getElementById("modalTimer").innerHTML = "Go!"; //hide modal
-	    }, 1000);
-	};
-	callback;
+	let int = setInterval(()=>{
+		--time;
+		if(time<=0){
+			document.getElementById('countdownTimer').innerHTML = `Go!!!`;
+			clearInterval(int);
+			callback();
+		}else{
+			document.getElementById('countdownTimer').innerHTML = `${time} seconds left`;
+		}
+	},1000);
 }
 timer = (time) => {
-	//then begin countdown timer
-	for(let i = time; i > 0; --i) {
-	    let int = setInterval(() => {
-	        //document.getElementById("timerDisplay").innerHTML = "Time remaining " + i;
-	        i-- || clearInterval(int); //document.getElementById("timerDisplay").innerHTML = "Times Up!";
-	    }, 1000);
+	let int = setInterval(()=>{
+		--time;
+		if(time<=0){
+			clearInterval(int);
+			if(game.hasntDrawn <= 1){
+				endGame();
+			}else{
+				nextRound();
+			}
+		}else if(time>game.timer){
+
+		}else if(time<=game.timer){
+			document.getElementById('roundTimer').innerHTML = `${time}`;
+		}
+	},1000);
+}
+nextRound=()=>{
+	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
+		player.score+100;
 	};
-	//endGame();
+	selectRandomPlayer(); //<= update player info, remove player from list of hasnt drawn, run functions to 
+	//clear screen
+
+
+}
+endGame=()=>{
+	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
+		player.score+100;
+	};
+	displayScores(); //<= display all scores, select winner, display reset button
 }
 //start timer and show cardAn to player
 beginGame = (answer) => {
@@ -161,20 +188,21 @@ beginGame = (answer) => {
 	if(player.draw){
 		//show answer to player (show in same modal above countdown timer)
 		//possibly start an animated clock;
-
+		console.log('ran');
 		//start countdown modal > run timer
-		countdown(10, timer(game.timer));
+		countdown(6, timer(game.timer+6));
 	}else if(!player.draw && !player.spectate){
 		//if player and not spectator
-		countdown(10, timer(game.timer));
+		countdown(6, timer(game.timer+6));
 	}else if(player.spectate && !player.draw){
 		//if just spectator
-		countdown(10, timer(game.timer));
+		countdown(6, timer(game.timer+6));
 	}
 }
 
 //spectate and non-drawer countdown
 socket.on('gameBegun', (answer) => {
+	console.log('aefa');
 	game.cardAn = answer;
 	beginGame(answer);
 })
@@ -275,7 +303,7 @@ socket.on('newPlayerJoinedRoom', (obj) => {
 	addToPlayerList(obj);
 	drawGameLobby();
 	if (player.leader){
-		socket.emit('sendListOfPlayers',{list: playersList, room: obj.roomName, id: obj.id, chatHistory: messageColumn.innerHTML});
+		socket.emit('sendListOfPlayers',{list: game.playersList, room: obj.roomName, id: obj.id, chatHistory: messageColumn.innerHTML});
 	}
 });
 
@@ -291,21 +319,24 @@ socket.on('chooseAnotherRoom',()=>{
 
 // ===== game lobby =====
 
-let playersList = [];
+
 const preGameLobby = document.getElementById('gameLobby');
 function addToPlayerList(obj){
-	return playersList.push(obj);
+	return game.playersList.push(obj);
 }
-function removePlayerFromList(str){
-	var index = playersList.indexOf(str);
-	playersList.splice(index, 1);
+function removePlayerFromList(arr,playerId){
+	arr.forEach((c,i,a)=>{
+		if(c.id == playerId){
+			arr.splice(i,1)
+		}
+	})
 }
 function overWritePlayersList(array){
-	playersList = array;
+	game.playersList = array;
 }
 function drawGameLobby(){
 	preGameLobby.innerHTML = '';
-	playersList.forEach(function(obj){
+	game.playersList.forEach(function(obj){
 		preGameLobby.innerHTML +=
 		`<li class="loading" data-id="${obj.id}">
             <span class="shownUserName">${obj.name}</span>
@@ -329,6 +360,12 @@ function drawGameLobby(){
 }
 socket.on('updateAllGameLobbies', (array) => {
 	overWritePlayersList(array);
+	drawGameLobby();
+});
+
+socket.on('userDC',(user)=>{
+	removePlayerFromList(game.playersList,user.userId);
+	//overWritePlayersList(playersList);
 	drawGameLobby();
 });
 
