@@ -34,7 +34,8 @@ createCanvas = function(){
         ctxPackage['offsetY'] = e.offsetY / canvas.height;
         ctxPackage['lastX'] = e.offsetX / canvas.width;
         ctxPackage['lastY'] = e.offsetY  / canvas.height;
-        socket.emit('playerDrawing', ctxPackage);
+        socket.emit('playerDrawing', {ctxPackage:ctxPackage,player:playerPayload});
+        console.log('playerDrawing', ctxPackage);
     }
 
     canvas.addEventListener('mousemove', draw)
@@ -126,5 +127,4 @@ createCanvas = function(){
         playerLastY = ctxServerpackage.offsetY;
 
     });
-
 } // end iife wrapper

@@ -124,19 +124,26 @@ io.sockets.on('connection',function(socket){
 	});
 
 	socket.on('playerDrawing',function(package){
-		socket.broadcast.emit('playerStartedDrawing',package);
+		socket.to(package.player.roomName).emit('playerStartedDrawing',package.ctxPackage);
 	});
 
 	socket.on('stopDrawing',function(){
 		socket.broadcast.emit('playerStopDrawing');
 	});
 
-	//when receive startgame choose who is drawer
-	socket.on('startGame',() => {
-
+	socket.on('getScore',(data)=>{
+		socket.broadcast.to(data.playerId).emit('getScore',{leader:data.leader});
 	});
 
+	socket.on('sendScore',(data)=>{
+		// emit to back to leader socket.to(data.leader).emit('sendScore',data.score);
+		console.log(data);
+		socket.broadcast.to(data.leader).emit('sendScore',{score:data.score,player:data.player});
+	});
 
+	socket.on('updateAllScores',(data)=>{
+		socket.broadcast.to(data.roomName).emit('updateAllScores',{scores:data.groupScores});
+	})
 
 // ==== AFTER GAME ====
 // =====================

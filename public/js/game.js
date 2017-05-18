@@ -47,7 +47,7 @@ const table = document.getElementById('table');
 const game = {
 				score : 0,
 				playersList : [],
-				hasntDrawn : [],
+				hasntDrawn : [1,2,3,4],
 				cardAn: '',
 				timer: 10,
 				deck : '',
@@ -67,6 +67,7 @@ let endGame;
 let showAnswer;
 let createCanvas;
 let nextRound;
+let groupScores;
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -98,7 +99,7 @@ createTable = (cards) => {
 		</div>
 		`
 	});
-	table.innerHTML = tableString;
+	$(table).css('display','none').html(tableString).fadeIn(500); //.innerHTML = tableString;
 }
 
 showAnswer = (ans) =>{
@@ -144,7 +145,7 @@ countdown = (time,callback) => {
 		if(time<=0){
 			document.getElementById('countdownTimer').innerHTML = `Go!!!`;
 			clearInterval(int);
-			callback();
+			//callback();
 		}else{
 			document.getElementById('countdownTimer').innerHTML = `${time} seconds left`;
 		}
@@ -168,19 +169,67 @@ timer = (time) => {
 	},1000);
 }
 nextRound=()=>{
+	groupScores = [];
 	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
-		player.score+100;
+		player.score+=100;
+		//correctGuess(); //<= show correct guess actions
+	}else{
+		//incorretGuess(); //<= show incorret guess actions
+	}
+	let cardSelected = document.querySelectorAll('.cardInner');
+	for(let x = 0;x<cardSelected.length;++x){
+		//add click event to all cards
+		if(!cardSelected[x].classList.contains('selected')){
+			cardSelected[x].classList.add('dis');
+			cardSelected[x].classList.remove('active','caution');
+			(cardSelected[x].classList.contains('flipped')) ? cardSelected[x].classList.remove('flipped') : null
+		}
 	};
-	selectRandomPlayer(); //<= update player info, remove player from list of hasnt drawn, run functions to 
+	window.canvas = document.querySelector('#canvas');
+    var ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	$('#screen').fadeIn(250);
+	$('.content').html('');
+	if(player.leader == true){
+		let playerDisplayString = '';
+			game.playersList.forEach((c,i,a)=>{
+				//if(c.id != player.id){
+					socket.emit('getScore',{playerId:c.id,leader:player.id});
+					console.log(game.playersList);
+				//}
+			});
+			
+
+	}
+	socket.on('getScore',(data)=>{
+		console.log(data);
+		let leader = data.leader;
+		socket.emit('sendScore',{leader:data.leader,score:player.score,player:playerPayload});
+	});
+	socket.on('sendScore',(data)=>{
+		console.log('eafea',data);
+			groupScores.push({playerId:data.player.id,playerScore:data.score});
+			console.log(groupScores);
+		if(groupScores.length == game.playersList){
+			socket.emit('updateAllScores',{groupScores:groupScores,roomName:player.roomName});
+			console.log("update");
+		}
+	})
+	socket.on('updateAllScores',(data)=>{
+		console.log('up',data);
+		//update scores
+	})
+	//$('.content').html(playerDisplayString);
+	$(table).fadeOut(125).html('');
+	//selectRandomPlayer(); //<= update player info, remove player from list of hasnt drawn, run functions to 
 	//clear screen
-
-
 }
+
 endGame=()=>{
 	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
 		player.score+100;
 	};
-	displayScores(); //<= display all scores, select winner, display reset button
+	//displayScores(); //<= display all scores, select winner, display reset button
 }
 //start timer and show cardAn to player
 beginGame = (answer) => {
@@ -188,7 +237,6 @@ beginGame = (answer) => {
 	if(player.draw){
 		//show answer to player (show in same modal above countdown timer)
 		//possibly start an animated clock;
-		console.log('ran');
 		//start countdown modal > run timer
 		countdown(6, timer(game.timer+6));
 	}else if(!player.draw && !player.spectate){
@@ -202,7 +250,6 @@ beginGame = (answer) => {
 
 //spectate and non-drawer countdown
 socket.on('gameBegun', (answer) => {
-	console.log('aefa');
 	game.cardAn = answer;
 	beginGame(answer);
 })
@@ -232,25 +279,49 @@ function beginCountDown(){
 		$('.gameCountdown').hide().removeClass('hidden').fadeIn(125);
 	});
 
-	var time = 5,
-		el = document.querySelector('#screen .content .pregame-countdown .pregame-time');
-	el.innerText = time + ' seconds';
-	var interval = setInterval(function(){
-		--time;
-		if (time > 1) {
-			el.innerText = time + ' seconds';
-		} else {
-			if (time === 0) {
-				clearInterval(interval);
-				socket.emit('startGame', playerPayload);
+	
+	var el = document.querySelector('#screen .content .pregame-countdown .pregame-time');
+	if(player.leader != true){
+		var time = 10;
+		el.innerText = time + ' seconds';
+		var interval = setInterval(function(){
+			--time;
+			if (time > 1) {
 				el.innerText = time + ' seconds';
-				$('#screen').fadeOut(125);
-				if(player.leader){getDeck(0,4)};
 			} else {
-				el.innerText = time + ' second';
+				if (time === 0) {
+					clearInterval(interval);
+					//socket.emit('startGame', playerPayload);
+					el.innerText = time + ' seconds';
+					$('#screen').fadeOut(125);
+					createTable(game.deck);
+					createCanvas();
+				} else {
+					el.innerText = time + ' second';
+				}
 			}
-		}
-	}, 1000)
+		}, 1000)
+	} else if(player.leader = true){
+		var time = 4;
+		el.innerText = time + ' seconds';
+		var interval = setInterval(function(){
+			--time;
+			if (time > 1) {
+				el.innerText = time + ' seconds';
+			} else {
+				if (time === 0) {
+					clearInterval(interval);
+					//socket.emit('startGame', playerPayload);
+					el.innerText = time + ' seconds';
+					$('#screen').fadeOut(125);
+					getDeck(0,4);
+				} else {
+					el.innerText = time + ' second';
+				}
+			}
+		}, 1000)
+	}
+	
 }
 
 
@@ -265,9 +336,10 @@ socket.on('deckRecieved',(data) => {
 	game.deck = data;
 	if(player.draw == true){
 		chooseCard(0,game.deck.length - 1);
-	}else if(player.draw == false && player.spectate == false){
-		createTable(game.deck);
 	}
+	/*else if(player.draw == false && player.spectate == false){
+		createTable(game.deck);
+	}*/
 });
 
 let NGButton = document.getElementById('newGameBtn');
@@ -300,6 +372,7 @@ JRButton.addEventListener('click', (e) =>{
 });
 
 socket.on('newPlayerJoinedRoom', (obj) => {
+	console.log(obj);
 	addToPlayerList(obj);
 	drawGameLobby();
 	if (player.leader){
