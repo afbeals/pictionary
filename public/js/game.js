@@ -47,7 +47,7 @@ const table = document.getElementById('table');
 const game = {
 				score : 0,
 				playersList : [],
-				hasntDrawn : [1,2,3,4],
+				hasntDrawn : [],
 				cardAn: '',
 				timer: 10,
 				deck : '',
@@ -68,6 +68,8 @@ let showAnswer;
 let createCanvas;
 let nextRound;
 let groupScores;
+let selectRandomPlayer;
+let startNextRound;
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -191,38 +193,71 @@ nextRound=()=>{
 	$('#screen').fadeIn(250);
 	$('.content').html('');
 	if(player.leader == true){
-		let playerDisplayString = '';
+		
 			game.playersList.forEach((c,i,a)=>{
-				//if(c.id != player.id){
+				if(c.id != player.id){
 					socket.emit('getScore',{playerId:c.id,leader:player.id});
-					console.log(game.playersList);
-				//}
+					console.log('plist',game.playersList);
+				}
 			});
 			
 
 	}
 	socket.on('getScore',(data)=>{
-		console.log(data);
+		console.log('on getscore:',data);
 		let leader = data.leader;
 		socket.emit('sendScore',{leader:data.leader,score:player.score,player:playerPayload});
 	});
-	socket.on('sendScore',(data)=>{
-		console.log('eafea',data);
-			groupScores.push({playerId:data.player.id,playerScore:data.score});
+	socket.on('scoreSent',(data)=>{
+		console.log('on sendscore',data);
+			groupScores.push({playerId:data.player.id,playerScore:data.score,playerName:data.player.name});
 			console.log(groupScores);
-		if(groupScores.length == game.playersList){
+		if(groupScores.length == (game.playersList.length-1)){
+			groupScores.push({playerId:player.id,playerScore:player.score,playerName:player.name})
 			socket.emit('updateAllScores',{groupScores:groupScores,roomName:player.roomName});
-			console.log("update");
+			console.log("update!");
 		}
 	})
 	socket.on('updateAllScores',(data)=>{
-		console.log('up',data);
-		//update scores
+		let playerDisplayString = '';
+		data.scores.forEach((c,i,a)=>{
+			playerDisplayString+=`${c.playerName} has <span class="showScore">${c.playerScore}</span> points!`;
+		})
+		document.getElementById('roundTimer').innerHTML = playerDisplayString;
 	})
-	//$('.content').html(playerDisplayString);
 	$(table).fadeOut(125).html('');
-	//selectRandomPlayer(); //<= update player info, remove player from list of hasnt drawn, run functions to 
+
+	if(player.leader){
+		selectRandomPlayer();
+	} 
 	//clear screen
+}
+
+socket.on('selectedPlayer',()=>{
+	console.log('yayay');
+	player.currentDrawer = true;
+	player.leader = true;
+	document.querySelector('#screen .content').innerHTML = `<button id="nextRound" onclick="startNextRound()">next Round</button>`;
+});
+
+socket.on('nextRoundStarted',()=>{
+	startNextRound();
+})
+startNextRound=()=>{
+	console.log('clickckc');
+	socket.emit('startNextRound');
+	beginNextRound();
+}
+
+selectRandomPlayer=()=>{
+	removePlayerFromList(game.hasntDrawn,player.id);
+	let min = Math.ceil(0);
+  	let max = Math.floor(game.hasntDrawn.length);
+  	let playerInArray = game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min]
+  	player.hasDrawn = true;
+  	player.currentDrawer = false;
+  	socket.emit('selectedNewPlayer',playerInArray);
+  	player.leader = false;
 }
 
 endGame=()=>{
@@ -271,6 +306,50 @@ StrButton.addEventListener('click', (e) =>{
 });
 
 // == ready game ==
+
+function beginNextRound(){
+	if(player.leader != true){
+		var time = 10;
+		//el.innerText = time + ' seconds';
+		var interval = setInterval(function(){
+			--time;
+			if (time > 1) {
+				//el.innerText = time + ' seconds';
+			} else {
+				if (time === 0) {
+					clearInterval(interval);
+					//socket.emit('startGame', playerPayload);
+					//el.innerText = time + ' seconds';
+					$('#screen').fadeOut(125);
+					createTable(game.deck);
+					createCanvas();
+				} else {
+					//el.innerText = time + ' second';
+				}
+			}
+		}, 1000)
+	} else if(player.leader = true){
+		var time = 4;
+		//el.innerText = time + ' seconds';
+		var interval = setInterval(function(){
+			--time;
+			if (time > 1) {
+				//el.innerText = time + ' seconds';
+			} else {
+				if (time === 0) {
+					clearInterval(interval);
+					//socket.emit('startGame', playerPayload);
+					//el.innerText = time + ' seconds';
+					$('#screen').fadeOut(125);
+					getDeck(0,4);
+				} else {
+					//el.innerText = time + ' second';
+				}
+			}
+		}, 1000)
+	}
+	
+}
 
 function beginCountDown(){
 	document.body.classList.add('pregame-countdown');
@@ -329,7 +408,7 @@ function beginCountDown(){
 
 
 //let client know game beginning soon:
-socket.on('beginCountDown',()=> { console.log('test'); beginCountDown() });
+socket.on('beginCountDown',()=> {beginCountDown() });
 
 //receive deck after getDeck() call
 socket.on('deckRecieved',(data) => {
@@ -372,7 +451,6 @@ JRButton.addEventListener('click', (e) =>{
 });
 
 socket.on('newPlayerJoinedRoom', (obj) => {
-	console.log(obj);
 	addToPlayerList(obj);
 	drawGameLobby();
 	if (player.leader){
@@ -395,6 +473,7 @@ socket.on('chooseAnotherRoom',()=>{
 
 const preGameLobby = document.getElementById('gameLobby');
 function addToPlayerList(obj){
+	game.hasntDrawn.push(obj);
 	return game.playersList.push(obj);
 }
 function removePlayerFromList(arr,playerId){
@@ -406,6 +485,7 @@ function removePlayerFromList(arr,playerId){
 }
 function overWritePlayersList(array){
 	game.playersList = array;
+	game.hasntDrawn = array;
 }
 function drawGameLobby(){
 	preGameLobby.innerHTML = '';
@@ -438,6 +518,7 @@ socket.on('updateAllGameLobbies', (array) => {
 
 socket.on('userDC',(user)=>{
 	removePlayerFromList(game.playersList,user.userId);
+	removePlayerFromList(game.hasntDrawn,user.userId);
 	//overWritePlayersList(playersList);
 	drawGameLobby();
 });

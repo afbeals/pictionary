@@ -132,17 +132,25 @@ io.sockets.on('connection',function(socket){
 	});
 
 	socket.on('getScore',(data)=>{
-		socket.broadcast.to(data.playerId).emit('getScore',{leader:data.leader});
+		socket.to(data.playerId).emit('getScore',{leader:data.leader});
 	});
 
 	socket.on('sendScore',(data)=>{
 		// emit to back to leader socket.to(data.leader).emit('sendScore',data.score);
-		console.log(data);
-		socket.broadcast.to(data.leader).emit('sendScore',{score:data.score,player:data.player});
+		socket.to(data.leader).emit('scoreSent',{score:data.score,player:data.player});
 	});
 
 	socket.on('updateAllScores',(data)=>{
-		socket.broadcast.to(data.roomName).emit('updateAllScores',{scores:data.groupScores});
+		io.in(data.roomName).emit('updateAllScores',{scores:data.groupScores});
+	});
+
+	socket.on('selectedNewPlayer',(data)=>{
+		console.log(data);
+		socket.to(data.id).emit('selectedPlayer');
+	});
+
+	socket.on('startNextRound',(data)=>{
+		socket.to(data.roomName).emit('nextRoundStarted');
 	})
 
 // ==== AFTER GAME ====
