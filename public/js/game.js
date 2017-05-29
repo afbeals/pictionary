@@ -45,13 +45,12 @@ createPlayer();
 
 const table = document.getElementById('table');
 const game = {
-				score : 0,
 				playersList : [],
 				hasntDrawn : [],
 				cardAn: '',
 				timer: 10,
-				deck : '',
-				finalRound: false
+				deck : ''
+				//finalRound: false
 			}
 
 let tableString = "";
@@ -63,13 +62,16 @@ let beginGame;
 let showDrawingTools;
 let countdown;
 let messageColumn;
-let endGame;
 let showAnswer;
 let createCanvas;
 let nextRound;
 let groupScores;
 let selectRandomPlayer;
 let startNextRound;
+let endGame;
+let restartGame;
+let openCanvas;
+let restartCanvas;
 
 // == card functionality
 // build out front end table based on chosen deck
@@ -105,14 +107,13 @@ createTable = (cards) => {
 }
 
 showAnswer = (ans) =>{
+	console.log('showAns',ans);
 	let answerString = `<div class="answer">
 							<div class="animate">
 								<p class="step1">
 									you're drawing...
 								</p>
-								<p class="step2">
-									${ans}
-								</p>
+								<p class="step2">${ans}</p>
 							</div>
 							
         					<div class="left">
@@ -122,13 +123,17 @@ showAnswer = (ans) =>{
 					            <p>${ans}</p>
 					        </div>
 					    </div>`;
+	console.log('showAns',ans);
+	table.style.display = "block";	    
 	table.innerHTML = answerString;
 }
 
 chooseCard = (min,max) => {
+	console.log('in choosecar');
   min = Math.ceil(min);
   max = Math.floor(max);
   game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
+  console.log('choosecard',game);
   showAnswer(game.cardAn);
   //beginGame(game.cardAn);
   socket.emit('beginGame',{cardAn: game.cardAn, roomName: playerPayload.roomName});
@@ -158,9 +163,11 @@ timer = (time) => {
 		--time;
 		if(time<=0){
 			clearInterval(int);
-			if(game.hasntDrawn <= 1){
+			if(game.hasntDrawn.length <= 1){
+				console.log('end the game!');
 				endGame();
 			}else{
+				console.log('next round!');
 				nextRound();
 			}
 		}else if(time>game.timer){
@@ -169,6 +176,110 @@ timer = (time) => {
 			document.getElementById('roundTimer').innerHTML = `${time}`;
 		}
 	},1000);
+}
+
+endGame=()=>{
+	groupScores = [];
+	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
+		player.score+=100;
+		//correctGuess(); //<= show correct guess actions
+	}else{
+		//incorretGuess(); //<= show incorret guess actions
+	}
+	let cardSelected = document.querySelectorAll('.cardInner');
+	for(let x = 0;x<cardSelected.length;++x){
+		//add click event to all cards
+		if(!cardSelected[x].classList.contains('selected')){
+			cardSelected[x].classList.add('dis');
+			cardSelected[x].classList.remove('active','caution');
+			(cardSelected[x].classList.contains('flipped')) ? cardSelected[x].classList.remove('flipped') : null
+		}
+	};
+	console.log('my score',player.score);
+	window.canvas = document.querySelector('#canvas');
+    var ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	$('#screen').fadeIn(250);
+	$('.content').html('');
+	if(player.leader == true){
+		
+			game.playersList.forEach((c,i,a)=>{
+				if(c.id != player.id){
+					socket.emit('getScore',{playerId:c.id,leader:player.id});
+				}
+			});
+			
+
+	}
+	socket.on('getScore',(data)=>{
+		let leader = data.leader;
+		socket.emit('sendScore',{leader:data.leader,score:player.score,player:playerPayload});
+	});
+	socket.on('scoreSent',(data)=>{
+			groupScores.push({playerId:data.player.id,playerScore:data.score,playerName:data.player.name});
+		if(groupScores.length == (game.playersList.length-1)){
+			groupScores.push({playerId:player.id,playerScore:player.score,playerName:player.name})
+			socket.emit('updateAllScores',{groupScores:groupScores,roomName:player.roomName});
+		}
+	})
+	socket.on('updateAllScores',(data)=>{
+		let playerDisplayString = '';
+		data.scores.forEach((c,i,a)=>{
+			playerDisplayString+=`${c.playerName} has <span class="showScore">${c.playerScore}</span> points!`;
+		})
+		document.getElementById('roundTimer').innerHTML = playerDisplayString;
+	})
+	$(table).fadeOut(125);
+	if(player.leader){
+		$('.content').html('<button  onclick="restartGame()">Restart Game</button><button  onclick="openCanvas()">Open Canvas</button>');
+	}else{
+		$('.content').html('gameOver player scores:');
+	}
+
+}
+
+restartGame=()=>{
+	socket.emit('restartGame',playerPayload);
+}
+
+socket.on('restartGame',()=>{
+	console.log('restarting');
+	if(!player.spectate){
+		player.guess="";
+		player.score=0;
+		player.hasDrawn=false;
+		player.draw=false;
+		player.currentDrawer=false;
+		player.leader=false;
+		game.hasntDrawn = game.playersList;
+		game.cardAn='';
+		game.deck='';
+		let min = Math.ceil(0);
+	  	let max = Math.floor(game.hasntDrawn.length);
+	  	let playerInArray = game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min];
+	  	socket.emit('setRestartLeader',playerInArray);
+	}
+
+});
+openCanvas=()=>{
+	socket.emit('openCanvas',playerPayload);
+}
+
+socket.on('openCanvas',()=>{
+	console.log('aefae');
+	if(!player.spectate){
+		player.draw=true;
+		player.currentDrawer=true;
+		window.canvas = document.querySelector('#canvas');
+	    var ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		$('#screen').fadeOut(250);
+	}
+	
+})
+
+restartCanvas=()=>{
+
 }
 nextRound=()=>{
 	groupScores = [];
@@ -197,25 +308,20 @@ nextRound=()=>{
 			game.playersList.forEach((c,i,a)=>{
 				if(c.id != player.id){
 					socket.emit('getScore',{playerId:c.id,leader:player.id});
-					console.log('plist',game.playersList);
 				}
 			});
 			
 
 	}
 	socket.on('getScore',(data)=>{
-		console.log('on getscore:',data);
 		let leader = data.leader;
 		socket.emit('sendScore',{leader:data.leader,score:player.score,player:playerPayload});
 	});
 	socket.on('scoreSent',(data)=>{
-		console.log('on sendscore',data);
 			groupScores.push({playerId:data.player.id,playerScore:data.score,playerName:data.player.name});
-			console.log(groupScores);
 		if(groupScores.length == (game.playersList.length-1)){
 			groupScores.push({playerId:player.id,playerScore:player.score,playerName:player.name})
 			socket.emit('updateAllScores',{groupScores:groupScores,roomName:player.roomName});
-			console.log("update!");
 		}
 	})
 	socket.on('updateAllScores',(data)=>{
@@ -225,7 +331,7 @@ nextRound=()=>{
 		})
 		document.getElementById('roundTimer').innerHTML = playerDisplayString;
 	})
-	$(table).fadeOut(125).html('');
+	$(table).fadeOut(125);
 
 	if(player.leader){
 		selectRandomPlayer();
@@ -234,38 +340,37 @@ nextRound=()=>{
 }
 
 socket.on('selectedPlayer',()=>{
-	console.log('yayay');
 	player.currentDrawer = true;
 	player.leader = true;
+	player.draw = true;
 	document.querySelector('#screen .content').innerHTML = `<button id="nextRound" onclick="startNextRound()">next Round</button>`;
 });
 
 socket.on('nextRoundStarted',()=>{
-	startNextRound();
+	beginNextRound();
 })
 startNextRound=()=>{
-	console.log('clickckc');
-	socket.emit('startNextRound');
-	beginNextRound();
+	socket.emit('startNextRound',playerPayload);
 }
+
+socket.on('updateDrawerList',(data)=>{
+	removePlayerFromList(game.hasntDrawn,data.id);
+})
 
 selectRandomPlayer=()=>{
 	removePlayerFromList(game.hasntDrawn,player.id);
+	socket.emit('updateDrawerList',playerPayload);
+	console.log(game.hasntDrawn);
 	let min = Math.ceil(0);
   	let max = Math.floor(game.hasntDrawn.length);
   	let playerInArray = game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min]
   	player.hasDrawn = true;
   	player.currentDrawer = false;
+  	player.draw = false;
   	socket.emit('selectedNewPlayer',playerInArray);
   	player.leader = false;
 }
 
-endGame=()=>{
-	if(game.cardAn.toLowerCase() == player.guess.toLowerCase()){
-		player.score+100;
-	};
-	//displayScores(); //<= display all scores, select winner, display reset button
-}
 //start timer and show cardAn to player
 beginGame = (answer) => {
 	//if drawer
@@ -308,42 +413,43 @@ StrButton.addEventListener('click', (e) =>{
 // == ready game ==
 
 function beginNextRound(){
+	let el = document.getElementById('countdownTimer');
 	if(player.leader != true){
 		var time = 10;
 		//el.innerText = time + ' seconds';
 		var interval = setInterval(function(){
 			--time;
 			if (time > 1) {
-				//el.innerText = time + ' seconds';
+				el.innerText = time + ' seconds';
 			} else {
 				if (time === 0) {
 					clearInterval(interval);
 					//socket.emit('startGame', playerPayload);
-					//el.innerText = time + ' seconds';
+					el.innerText = time + ' seconds';
 					$('#screen').fadeOut(125);
 					createTable(game.deck);
 					createCanvas();
 				} else {
-					//el.innerText = time + ' second';
+					el.innerText = time + ' second';
 				}
 			}
 		}, 1000)
-	} else if(player.leader = true){
+	}else if(player.leader = true){
 		var time = 4;
-		//el.innerText = time + ' seconds';
+		el.innerText = time + ' seconds';
 		var interval = setInterval(function(){
 			--time;
 			if (time > 1) {
-				//el.innerText = time + ' seconds';
+				el.innerText = time + ' seconds';
 			} else {
 				if (time === 0) {
 					clearInterval(interval);
 					//socket.emit('startGame', playerPayload);
-					//el.innerText = time + ' seconds';
+					el.innerText = time + ' seconds';
 					$('#screen').fadeOut(125);
 					getDeck(0,4);
 				} else {
-					//el.innerText = time + ' second';
+					el.innerText = time + ' second';
 				}
 			}
 		}, 1000)

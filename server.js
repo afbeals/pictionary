@@ -10,7 +10,6 @@ var server = app.listen(8000,function(){
 
 });
 
-
 // ==== socket.io ====
 // https://github.com/socketio/socket.io/blob/master/docs/README.md
 var io = require('socket.io').listen(server);
@@ -23,12 +22,10 @@ const decks = {
 const currentRooms = {
 	rooms : {},
 	numOfPlayers : 0,
-
 	//remove all clients from room
 	destroyAll () {
 
 	},
-
 	//remove single client from room
 	removePlayer (){
 
@@ -37,11 +34,9 @@ const currentRooms = {
 	banPlayer(){
 
 	},
-
 	get CurrentNumOfPlayers (){
 		console.log(`currently connected players: ${this.numOfPlayers}`);
 	}
-
 }
 const roomIdGenerator = function(roomName){
   min = Math.ceil(100000);
@@ -53,7 +48,6 @@ const roomIdGenerator = function(roomName){
 io.sockets.on('connection',function(socket){
 	++currentRooms.numOfPlayers;
 	currentRooms.CurrentNumOfPlayers;
-
 	// assign id immediately!
 	socket.emit('assignID', socket.id);
 
@@ -93,10 +87,6 @@ io.sockets.on('connection',function(socket){
 	socket.on('playerReadyToSpectate',(obj) => {
 		socket.to(obj.roomName).emit('playerIsSpectating', obj);
 	});
-
-
-
-
 
 // ==== DURING GAME ====
 // =====================
@@ -145,12 +135,15 @@ io.sockets.on('connection',function(socket){
 	});
 
 	socket.on('selectedNewPlayer',(data)=>{
-		console.log(data);
 		socket.to(data.id).emit('selectedPlayer');
 	});
 
 	socket.on('startNextRound',(data)=>{
-		socket.to(data.roomName).emit('nextRoundStarted');
+		io.in(data.roomName).emit('nextRoundStarted');
+	});
+
+	socket.on('updateDrawerList',(data)=>{
+		socket.to(data.roomName).emit('updateDrawerList',data);
 	})
 
 // ==== AFTER GAME ====
@@ -162,24 +155,16 @@ io.sockets.on('connection',function(socket){
 		// socket.emit('chooseAnotherRoom');
 	});
 
+	socket.on('restartGame',(data)=>{
+		io.in(data.roomName).emit("restartGame");
+	});
 
-
-
-
-
+	socket.on('openCanvas',(data)=>{
+		io.in(data.roomName).emit("openCanvas");
+	});
 
 
 //------------------------------------------------------------------------------------------
-
-
-	socket.on('test',(roomName)=>{
-		socket.join(roomName);
-		var clients = io.sockets.adapter.rooms[roomName];
-		console.log('my clients: ',clients);
-		var clientList = Object.keys(io.sockets.sockets);
-		io.to(testingThis).emit('messge','object');
-	})
-
 
 // == Helpers
 	// send back to connected clients
