@@ -23,7 +23,7 @@
 				};
 				t.closest('.cardInner').classList.remove('flipped')}
 				,250);
-			player.guess = pN.parentNode.parentNode.firstElementChild.innerText;
+			PIC.player.guess = pN.parentNode.parentNode.firstElementChild.innerText;
 		} else if (t && t.classList.contains('Possible') || t.classList.contains('fa-exclamation')){
 			t.closest('.cardInner').classList.add('caution');
 			setTimeout(()=>{t.closest('.cardInner').classList.remove('flipped')},500);

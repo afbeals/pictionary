@@ -1,5 +1,6 @@
 'use strict'
-//classes
+ //=====Classes=====//
+//=================//
 class PlayerPayload{
 	constructor(name,roomName,id){
 		this.name = name;
@@ -33,50 +34,18 @@ class Player extends PlayerPayload{
 	}
 }
 
-//initializers
-PIC.StrButton.addEventListener('click', (e) =>{
-	PIC.sockets.emits.gameCountDown(PIC.playerPayload);
-});
-
-PIC.NGButton.addEventListener('click', (e) =>{
-	let roomName = document.getElementsByName('bunk')[0].value;
-	let playerName = document.getElementsByName('username')[0].value;
-	if(roomName.length > 1 && playerName.length > 1){
-		PIC.sockets.emits.createRoom(playerName,roomName);	
-	}
-});
-
-PIC.JRButton.addEventListener('click', (e) =>{
-	let roomName = document.getElementsByName('gameId')[0].value;
-	let playerName = document.getElementsByName('username')[0].value;
-	if(roomName.length > 1 && playerName.length > 1){
-		PIC.func.createPlayer(playerName, roomName, playerPayload.id);
-		PIC.sockets.emits.joinRoom(playerPayload);
-	}
-});
-
-PIC.readyBtn.addEventListener('click', () => {
-	PIC.func.playerReady();
-	PIC.func.playerReadyToPlay(PIC.playerPayload);
-	PIC.func.createCanvas();
-});
-
-PIC.spectatingBtn.addEventListener('click', () => {
-	PIC.func.playerSpectating();
-	PIC.func.playerReadyToSpectate(playerPayload);
-	PIC.func.createCanvas();
-});
-
-//PIC object
+ //=====Game Obj=====//
+//==================//
 const PIC = {
+	// consistent DOM elements
 	JRButton : document.getElementById('joinGameBtn'),
-	NGButton : document.getElementById('startGame'),
-	playerLi : null,
+	NGButton : document.getElementById('newGameBtn'),
 	preGameLobby : document.getElementById('gameLobby'),
-	raedyBtn : document.getElementById('readyButton'),
+	readyBtn : document.getElementById('readyButton'),
 	spectatingBtn : document.getElementById('spectateButton'),
 	StrButton : document.getElementById('startGame'),
 	table : document.getElementById('table'),
+	//game constants
 	tableString : "",
 	groupScore : [],
     player: {},
@@ -88,6 +57,20 @@ const PIC = {
 		timer: 10,
 		deck : ''
     },
+    game2:{
+
+    },
+    user: {
+
+    },
+    //initialize socket receivers
+	initializeRec: ()=>{
+		let picReceivers = PIC.sockets.receivers;
+		for(let func in picReceivers){
+			picReceivers[func]();
+		}
+	},
+	//socket func
     sockets:{
     	emits:{
 	    	beginGame : (cardAn, roomName) =>{
@@ -144,7 +127,7 @@ const PIC = {
 			},
     	},
 
-    	recievers:{
+    	receivers:{
     		assignID : ()=>{
     			socket.on('assignID', (id) => PIC.playerPayload.id = id);
     		},
@@ -166,7 +149,7 @@ const PIC = {
 					PIC.messageColumn.innerHTML = obj.currentChat;
 				});
     		},
-    		getScore : ()=>{
+    		gameBegun : ()=>{
     			socket.on('gameBegun', (answer) => {
 					PIC.game.cardAn = answer;
 					PIC.func.beginGame(answer);
@@ -204,14 +187,17 @@ const PIC = {
     			})
     		},
     		playerIsReady : () =>{
-    			socket.on('playerIsReady', (obj) => playerReady(event, obj.id));
+    			socket.on('playerIsReady', (obj) => PIC.func.playerReady(event, obj.id));
     		},
     		playerIsSpectating : () =>{
-    			socket.on('playerIsSpectating', (obj) => playerSpectating(event, obj.id));
+    			socket.on('playerIsSpectating', (obj) => PIC.func.playerSpectating(event, obj.id));
     		},
     		restartGame : ()=>{
+    			console.log('restart');
     			socket.on('restartGame',()=>{
+    				
 	    			if(!PIC.player.spectate){
+	    				console.log('avea');
 						PIC.player.guess="";
 						PIC.player.score=0;
 						PIC.player.hasDrawn=false;
@@ -223,19 +209,20 @@ const PIC = {
 						let min = Math.ceil(0);
 					  	let max = Math.floor(PIC.game.hasntDrawn.length);
 					  	let playerInArray = PIC.game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min];
+					  	console.log(playerInArray);
 					  	PIC.sockets.emits.setRestartLeader(playerInArray);
 					}
 				});
     		},
     		roomCreated : () =>{
     			socket.on('roomCreated',(msg) => {
-					PIC.func.createPlayer(PIC.playerPayload.name, msg.roomName, PIC.playerPayload.id);
+					PIC.func.createPlayer(msg.username, msg.roomName, PIC.playerPayload.id);
 					document.getElementById('gameId').innerHTML = `${msg.roomName}`;
 					PIC.player.draw = true;
 					PIC.player.leader = true;
 					document.body.classList.add('roomLeader')
 					PIC.func.showDrawingTools();
-					PIC.func.addToPlayerList(playerPayload);
+					PIC.func.addToPlayerList(PIC.playerPayload);
 					PIC.func.drawGameLobby();
 				});
     		},
@@ -243,14 +230,14 @@ const PIC = {
     			socket.on('selectedPlayer',()=>{
 					PIC.player.leader = true;
 					PIC.player.draw = true;
-					document.querySelector('#screen .content').innerHTML = `<button id="nextRound" onclick="startNextRound()">next Round</button>`;
+					document.querySelector('#screen .content').innerHTML = `<button id="nextRound" onclick="PIC.func.startNextRound()">next Round</button>`;
 				});
     		},
     		scoreSent : ()=>{
     			socket.on('scoreSent',(data)=>{
 					PIC.groupScores.push({playerId:data.player.id,playerScore:data.score,playerName:data.player.name});
 					if(PIC.groupScores.length == (PIC.game.playersList.length-1)){
-						PIC.groupScores.push({playerId:player.id,playerScore:player.score,playerName:player.name})
+						PIC.groupScores.push({playerId:PIC.player.id,playerScore:PIC.player.score,playerName:PIC.player.name})
 						PIC.sockets.emits.updateAllScores(PIC.groupScores,PIC.player.roomName);
 					}
 				})
@@ -287,6 +274,7 @@ const PIC = {
     		}
     	}	
 	},
+	//game methods
     func: {
         startGame: ()=>{
 			$('.intro').fadeOut(250, function(){
@@ -317,13 +305,47 @@ const PIC = {
 		   PIC.player = new Player(name,roomName,id);
 		},
 
+		createTable : (cards) =>{
+			PIC.tableString = ``;
+			cards.forEach((e, i) => {
+				
+			    PIC.tableString +=`
+				<div class="card">
+					<div class="cardInner active">
+						<div class="front">
+							<span class="topL"></span>
+							<span class="topR"></span>
+							<span class="bottomL"></span>
+							<span class="bottomR"></span>
+							${e}
+						</div>
+						<div class="back">
+							<h3>${e}</h3>
+							<button class="notPossible">
+								<i aria-hidden="true" class="fa fa-times"></i>
+							</button>
+							<button class="Possible">
+								<i aria-hidden="true" class="fa fa-exclamation"></i>
+							</button>
+							<button class="Final">
+								<i aria-hidden="true" class="fa fa-check"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				`
+			});
+			$(PIC.table).css('display','none').html(PIC.tableString).fadeIn(500); //.innerHTML = tableString;
+		},
+
         // build out front end table based on chosen deck
         beginGame : (answer) => {
 			if(PIC.player.draw){
+				console.log("yaea'")
 				PIC.func.countdown(6, PIC.func.timer(PIC.game.timer+6));
-			}else if(!player.draw && !player.spectate){
+			}else if(!PIC.player.draw && !PIC.player.spectate){
 				PIC.func.countdown(6, PIC.func.timer(PIC.game.timer+6));
-			}else if(player.spectate && !player.draw){
+			}else if(PIC.player.spectate && !PIC.player.draw){
 				PIC.func.countdown(6, PIC.func.timer(PIC.game.timer+6));
 			}
 		},
@@ -346,14 +368,14 @@ const PIC = {
 							clearInterval(interval);
 							el.innerText = time + ' seconds';
 							$('#screen').fadeOut(125);
-							PIC.func.createTable(game.deck);
-							createCanvas();
+							PIC.func.createTable(PIC.game.deck);
+							PIC.func.createCanvas();
 						} else {
 							el.innerText = time + ' second';
 						}
 					}
 				}, 1000)
-			} else if(player.leader = true){
+			} else if(PIC.player.leader = true){
 				let time = 4;
 				el.innerText = time + ' seconds';
 				let interval = setInterval(function(){
@@ -394,7 +416,7 @@ const PIC = {
 						}
 					}
 				}, 1000)
-			}else if(player.leader = true){
+			}else if(PIC.player.leader = true){
 				let time = 4;
 				el.innerText = time + ' seconds';
 				let interval = setInterval(function(){
@@ -419,8 +441,8 @@ const PIC = {
 		chooseCard : (min,max) => {
 			min = Math.ceil(min);
 			max = Math.floor(max);
-			PIC.game.cardAn = game.deck[Math.floor(Math.random() * (max - min)) + min];
-			PIC.func.showAnswer(game.cardAn);
+			PIC.game.cardAn = PIC.game.deck[Math.floor(Math.random() * (max - min)) + min];
+			PIC.func.showAnswer(PIC.game.cardAn);
 			PIC.sockets.emits.beginGame(PIC.game.cardAn,PIC.playerPayload.roomName);
 		},
 
@@ -439,7 +461,9 @@ const PIC = {
 
 		drawGameLobby : ()=>{
 			PIC.preGameLobby.innerHTML = '';
+			console.log(PIC.game.playersList);
 			PIC.game.playersList.forEach(function(obj){
+				console.log(obj);
 				PIC.preGameLobby.innerHTML +=
 				`<li class="loading" data-id="${obj.id}">
 		            <span class="shownUserName">${obj.name}</span>
@@ -485,8 +509,8 @@ const PIC = {
 			$('.content').html('');
 			if(PIC.player.leader == true){
 				PIC.game.playersList.forEach((c,i,a)=>{
-					if(c.id != player.id){
-						PIC.sockets.emits.getScore(c.id,player.id);
+					if(c.id != PIC.player.id){
+						PIC.sockets.emits.getScore(c.id,PIC.player.id);
 					}
 				});
 			}
@@ -495,7 +519,7 @@ const PIC = {
 			PIC.sockets.receivers.updateAllScores();
 			$(PIC.table).fadeOut(125);
 			if(PIC.player.leader){
-				$('.content').html('<button  onclick="restartGame()">Restart Game</button><button  onclick="openCanvas()">Open Canvas</button>');
+				$('.content').html('<button  onclick="PIC.func.restartGame()">Restart Game</button><button  onclick="PIC.func.openCanvas()">Open Canvas</button>');
 			}else{
 				$('.content').html('gameOver player scores:');
 			}
@@ -531,8 +555,8 @@ const PIC = {
 			$('.content').html('');
 			if(PIC.player.leader == true){
 				PIC.game.playersList.forEach((c,i,a)=>{
-					if(c.id != player.id){
-						PIC.sockets.emits.getScore(c.id,player.id);
+					if(c.id != PIC.player.id){
+						PIC.sockets.emits.getScore(c.id,PIC.player.id);
 					}
 				});
 			}
@@ -556,17 +580,17 @@ const PIC = {
 
 		playerSpectating : (event, id)=>{
 			if (!id) { id = PIC.playerPayload.id; }
-			PIC.playerLi = PIC.preGameLobby.querySelector('[data-id="'+ id +'"]');
-			PIC.playerLi.classList.remove('loading','readyToPlay');
-			PIC.playerLi.classList.add('spectating');
+			let playerLi = PIC.preGameLobby.querySelector('[data-id="'+ id +'"]');
+			playerLi.classList.remove('loading','readyToPlay');
+			playerLi.classList.add('spectating');
 			PIC.player.spectate = true;
 		},
 
 		playerReady : (event, id)=>{
 			if (!id) { id = PIC.playerPayload.id; }
-			PIC.playerLi = PIC.preGameLobby.querySelector('[data-id="'+ id +'"]');
-			PIC.playerLi.classList.remove('loading','spectating');
-			PIC.playerLi.classList.add('readyToPlay');
+			let playerLi = PIC.preGameLobby.querySelector('[data-id="'+ id +'"]');
+			playerLi.classList.remove('loading','spectating');
+			playerLi.classList.add('readyToPlay');
 		},
 
 		removePlayerFromList: (arr,pId)=>{
@@ -585,8 +609,8 @@ const PIC = {
 		},
 
 		selectRandomPlayer: ()=>{
-			removePlayerFromList(PIC.game.hasntDrawn,PIC.player.id);
-			PIC.sockets.emits.updateDrawerList('updateDrawerList',PIC.playerPayload);
+			PIC.func.removePlayerFromList(PIC.game.hasntDrawn,PIC.player.id);
+			PIC.sockets.emits.updateDrawerList(PIC.playerPayload);
 			let min = Math.ceil(0);
 		  	let max = Math.floor(PIC.game.hasntDrawn.length);
 		  	let playerInArray = PIC.game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min]
@@ -624,7 +648,7 @@ const PIC = {
 		},
 
 		startNextRound : ()=>{
-			PIC.sockets.emits.startNextRound(Pic.playerPayload);
+			PIC.sockets.emits.startNextRound(PIC.playerPayload);
 		},
 
 		//timer for event
@@ -633,15 +657,53 @@ const PIC = {
 				--time;
 				if(time<=0){
 					clearInterval(int);
-					if(game.hasntDrawn.length <= 1){
+					if(PIC.game.hasntDrawn.length <= 1){
 						PIC.func.endGame();
 					}else{
 						PIC.func.nextRound();
 					}
-				}else if(time<=game.timer){
+				}else if(time<=PIC.game.timer){
 					document.getElementById('roundTimer').innerHTML = `${time}`;
 				}
 			},1000);
 		},
     }
 }
+
+
+
+//initializers
+PIC.StrButton.addEventListener('click', (e) =>{
+	PIC.sockets.emits.gameCountDown(PIC.playerPayload);
+});
+
+PIC.NGButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementsByName('bunk')[0].value;
+	let playerName = document.getElementsByName('username')[0].value;
+	if(roomName.length > 1 && playerName.length > 1){
+		PIC.sockets.emits.createRoom(playerName,roomName);	
+	}
+});
+
+PIC.JRButton.addEventListener('click', (e) =>{
+	let roomName = document.getElementsByName('gameId')[0].value;
+	let playerName = document.getElementsByName('username')[0].value;
+	if(roomName.length > 1 && playerName.length > 1){
+		PIC.func.createPlayer(playerName, roomName, PIC.playerPayload.id);
+		PIC.sockets.emits.joinRoom(PIC.playerPayload);
+	}
+});
+
+PIC.readyBtn.addEventListener('click', () => {
+	PIC.func.playerReady();
+	PIC.sockets.emits.playerReadyToPlay(PIC.playerPayload);
+	PIC.func.createCanvas();
+});
+
+PIC.spectatingBtn.addEventListener('click', () => {
+	PIC.func.playerSpectating();
+	PIC.sockets.emits.playerReadyToSpectate(PIC.playerPayload);
+	PIC.func.createCanvas();
+});
+
+PIC.initializeRec();

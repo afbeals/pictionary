@@ -1,5 +1,5 @@
 'use strict';
-createCanvas = function(){
+PIC.func.createCanvas = function(){
         window.mouseDown = false; // !! global
         document.body.addEventListener('mousedown', () => mouseDown = true);
         document.body.addEventListener('mouseup', () => mouseDown = false);
@@ -34,13 +34,12 @@ createCanvas = function(){
         ctxPackage['offsetY'] = e.offsetY / canvas.height;
         ctxPackage['lastX'] = e.offsetX / canvas.width;
         ctxPackage['lastY'] = e.offsetY  / canvas.height;
-        socket.emit('playerDrawing', {ctxPackage:ctxPackage,player:playerPayload});
-        console.log('playerDrawing', ctxPackage);
+        socket.emit('playerDrawing', {ctxPackage:ctxPackage,player:PIC.playerPayload});
     }
 
     canvas.addEventListener('mousemove', draw)
     canvas.addEventListener('mousedown', (e) => {
-        player.draw ? (
+        PIC.player.draw ? (
                         isDrawing = true, 
                         lastX = e.offsetX,
                         lastY = e.offsetY,

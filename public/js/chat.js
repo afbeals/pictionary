@@ -1,65 +1,65 @@
-(function(){
+(function() {
     'use strict'
     // == variables
-    var chatColumn = document.getElementById('chatColumn');
-    messageColumn = chatColumn.querySelector('.messages');
-    var chatForm = chatColumn.querySelector('form');
-    var message = chatForm.querySelector('[name="chatInput"]');
-    var welcomeMessage = null; // not yet created
+    let   chatColumn = document.getElementById('chatColumn'),
+            chatForm = chatColumn.querySelector('form'),
+            message = chatForm.querySelector('[name="chatInput"]'),
+            welcomeMessage = null; // not yet created
+    PIC.messageColumn = chatColumn.querySelector('.messages');       
 
-    // == event listeners
-    chatForm.addEventListener('submit', submitChat);
-    chatForm.addEventListener('onsubmit', submitChat);
-    message.addEventListener('keyup',(e)=>{if(e.keyCode == 13){submitChat(e)}});
-    socket.on('chatUpdate', function(data){ printMessage(data); });
-
-    // == setup
-    if (welcomeMessage === null) {
-        messageColumn.innerHTML += '<p class="chatWelcome">Welcome!</p>';
-        moveChatUp();
-    }
-
-    // function lib
-    function submitChat(e){
+    // == function lib
+    let submitChat=(e)=>{
         e.preventDefault();
-        var name = PIC.user.username;
-        var msg = message.value;
-        var currentChat = '';
+        let name = PIC.user.username,
+            msg = message.value,
+            currentChat = '';
         if (msg.length < 1) return; // stop if no message
 
         // show message in chat and clear fields
-        printMessage({"username":name, "userMessage":msg});
+        printMessage({ "username": name, "userMessage": msg });
         message.value = '';
         message.focus();
 
         // send server username, message, and copy of current chat
-        currentChat = messageColumn.innerHTML;
-        socket.emit('chatUpdate',{"username":name, "userMessage":msg, "currentChat":currentChat, 'player':playerPayload});
+        currentChat = PIC.messageColumn.innerHTML;
+        socket.emit('chatUpdate', { "username": name, "userMessage": msg, "currentChat": currentChat, 'player': PIC.playerPayload });
     }
 
-    function printMessage(obj){
-        messageColumn.innerHTML += '<p><span class="username">' + obj.username + ': </span><span class="user-message">' + obj.userMessage + '</span></p>';
+    let printMessage=(obj)=>{
+        PIC.messageColumn.innerHTML += '<p><span class="username">' + obj.username + ': </span><span class="user-message">' + obj.userMessage + '</span></p>';
         moveChatUp();
     }
 
-    function moveChatUp(){
-        welcomeMessage = messageColumn.querySelector('.chatWelcome');
-        var contentHeight = Array
-            .from(messageColumn.querySelectorAll('p'))
-            .reduce(function(total, el){
-                return total + el.clientHeight;
-            },0);
-        if (contentHeight <= messageColumn.clientHeight) {
-            welcomeMessage.style.marginTop = (messageColumn.clientHeight - contentHeight)+'px';
+    let moveChatUp=()=>{
+        welcomeMessage = PIC.messageColumn.querySelector('.chatWelcome');
+        let contentHeight = Array
+                .from(PIC.messageColumn.querySelectorAll('p'))
+                .reduce(function(total, el) {
+                    return total + el.clientHeight;
+                }, 0);
+        if (contentHeight <= PIC.messageColumn.clientHeight) {
+            welcomeMessage.style.marginTop = (PIC.messageColumn.clientHeight - contentHeight) + 'px';
         } else {
             welcomeMessage.style.marginTop = '0px';
-            messageColumn.scrollTop = messageColumn.scrollHeight;
+            PIC.messageColumn.scrollTop = PIC.messageColumn.scrollHeight;
         }
 
+    }
+
+    // == event listeners
+    chatForm.addEventListener('submit', submitChat);
+    chatForm.addEventListener('onsubmit', submitChat);
+    message.addEventListener('keyup', (e) => {
+        if (e.keyCode == 13) { submitChat(e) } });
+    socket.on('chatUpdate', (data)=>{ printMessage(data); });
+
+    // == setup
+    if (welcomeMessage === null) {
+        PIC.messageColumn.innerHTML += '<p class="chatWelcome">Welcome!</p>';
+        moveChatUp();
     }
 
     // return PIC.chat = {
     //     "addMessage": printMessage
     // }
 }());
-
