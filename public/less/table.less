@@ -13,6 +13,9 @@
     border-radius: 5%;
     overflow: hidden;
     margin: 10px auto 20px auto;
+    @media(max-width: 767px){
+      width: 100%;
+    }
     .animate{
       position: absolute;
       display: inline-block;
@@ -60,6 +63,21 @@
           position: absolute;
           height: 25%;
           box-sizing: initial;
+          @media(max-width:1199px){
+            border-top: 30px solid transparent;
+            border-bottom: 32px solid transparent;
+            border-left: 169px solid #da2323;
+          }
+          @media(max-width: 991px){
+            border-top: 32px solid transparent;
+            border-bottom: 35px solid transparent;
+            border-left: 158px solid #da2323;
+          }
+          @media(max-width: 767px){
+            border-top: 26px solid transparent;
+            border-bottom: 33px solid transparent;
+            border-left: 136px solid #da2323;
+          }
         }
       }
       p{
@@ -73,6 +91,21 @@
         margin-left: 20px;
         padding: 55px 0px;
         text-transform: capitalize;
+        @media(max-width: 1199px){
+          font-size: 26px;
+          margin-left: 58px;
+          padding: 17px 0px;
+        }
+        @media(max-width: 991px){
+          font-size: 28px;
+          margin-left: 43px;
+          padding: 18px 0px;
+        }
+        @media(max-width: 767px){
+          font-size: 22px;
+          margin-left: 44px;
+          padding: 18px 0px;
+        }
       }
     }
   }
@@ -87,6 +120,9 @@
     -ms-perspective: 800px;
     perspective: 800px;
     border-radius: 4px;
+    @media(max-width: 767px){
+      width: 41%;
+    }
   }
   .cardInner {
     width: 100%;

@@ -163,6 +163,10 @@ io.sockets.on('connection',function(socket){
 		io.in(data.roomName).emit("openCanvas");
 	});
 
+	socket.on('setRestartLeader',(data)=>{
+		io.in(data.roomName).emit('setRestartLeader',data);
+	});
+
 
 //------------------------------------------------------------------------------------------
 

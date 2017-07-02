@@ -54,7 +54,7 @@ const PIC = {
     	playersList : [],
 		hasntDrawn : [],
 		cardAn: '',
-		timer: 10,
+		timer: 12,
 		deck : ''
     },
     game2:{
@@ -193,11 +193,9 @@ const PIC = {
     			socket.on('playerIsSpectating', (obj) => PIC.func.playerSpectating(event, obj.id));
     		},
     		restartGame : ()=>{
-    			console.log('restart');
     			socket.on('restartGame',()=>{
     				
 	    			if(!PIC.player.spectate){
-	    				console.log('avea');
 						PIC.player.guess="";
 						PIC.player.score=0;
 						PIC.player.hasDrawn=false;
@@ -209,7 +207,6 @@ const PIC = {
 						let min = Math.ceil(0);
 					  	let max = Math.floor(PIC.game.hasntDrawn.length);
 					  	let playerInArray = PIC.game.hasntDrawn[Math.floor(Math.random() * (max - min)) + min];
-					  	console.log(playerInArray);
 					  	PIC.sockets.emits.setRestartLeader(playerInArray);
 					}
 				});
@@ -225,6 +222,18 @@ const PIC = {
 					PIC.func.addToPlayerList(PIC.playerPayload);
 					PIC.func.drawGameLobby();
 				});
+    		},
+    		setRestartLeader : ()=>{
+    			socket.on('setRestartLeader',(data)=>{
+    				if(PIC.player.id == data.id){
+    					PIC.player.draw = true;
+    					PIC.player.hasDrawn = true;
+    					PIC.player.leader=true;
+    					$('.content').css('display','block');
+    					PIC.sockets.emits.gameCountDown(PIC.playerPayload);
+    					
+    				}
+    			});
     		},
     		selectedPlayers : ()=>{
     			socket.on('selectedPlayer',()=>{
@@ -248,6 +257,7 @@ const PIC = {
 					PIC.func.removePlayerFromList(PIC.game.playersList,user.userId);
 					PIC.func.removePlayerFromList(PIC.game.hasntDrawn,user.userId);
 					PIC.func.drawGameLobby();
+
 				});
     		},
 
@@ -264,7 +274,7 @@ const PIC = {
 					data.scores.forEach((c,i,a)=>{
 						playerDisplayString+=`${c.playerName} has <span class="showScore">${c.playerScore}</span> points!`;
 					})
-					document.getElementById('roundTimer').innerHTML = playerDisplayString;
+					document.getElementById('playerScores').innerHTML = playerDisplayString;
 				})
     		},
     		updateDrawerList : ()=>{
@@ -341,7 +351,6 @@ const PIC = {
         // build out front end table based on chosen deck
         beginGame : (answer) => {
 			if(PIC.player.draw){
-				console.log("yaea'")
 				PIC.func.countdown(6, PIC.func.timer(PIC.game.timer+6));
 			}else if(!PIC.player.draw && !PIC.player.spectate){
 				PIC.func.countdown(6, PIC.func.timer(PIC.game.timer+6));
@@ -461,9 +470,7 @@ const PIC = {
 
 		drawGameLobby : ()=>{
 			PIC.preGameLobby.innerHTML = '';
-			console.log(PIC.game.playersList);
 			PIC.game.playersList.forEach(function(obj){
-				console.log(obj);
 				PIC.preGameLobby.innerHTML +=
 				`<li class="loading" data-id="${obj.id}">
 		            <span class="shownUserName">${obj.name}</span>
@@ -506,7 +513,7 @@ const PIC = {
 		    let ctx = canvas.getContext('2d');
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			$('#screen').fadeIn(250);
-			$('.content').html('');
+			$('.content div').hide();
 			if(PIC.player.leader == true){
 				PIC.game.playersList.forEach((c,i,a)=>{
 					if(c.id != PIC.player.id){
@@ -518,11 +525,21 @@ const PIC = {
 			PIC.sockets.receivers.scoreSent();
 			PIC.sockets.receivers.updateAllScores();
 			$(PIC.table).fadeOut(125);
+			PIC.func.openCanvas();
+			$('#screen').closest('.col-sm-8.col-md-9').append('<button onclick="PIC.func.tempRestartGame()">Restart</button>');
+
+			/*
 			if(PIC.player.leader){
-				$('.content').html('<button  onclick="PIC.func.restartGame()">Restart Game</button><button  onclick="PIC.func.openCanvas()">Open Canvas</button>');
+				if($('.content #endGameWrapper').length == 0){
+					$('.content').append('<div id="endGameWrapper"><p>Player\'s Scores: </p><br /><button  onclick="PIC.func.restartGame()">Restart Game</button><button  onclick="PIC.func.openCanvas()">Open Canvas</button></div>');
+				}else{
+					$('.content,#endGameWrapper').show();
+				}
 			}else{
-				$('.content').html('gameOver player scores:');
+				$('.content').append('gameOver player scores:');
+				$('.content').show();
 			}
+			*/
 		},
 
 		// select deck from server
@@ -667,6 +684,9 @@ const PIC = {
 				}
 			},1000);
 		},
+		tempRestartGame : ()=>{
+			location.reload();
+		}
     }
 }
 

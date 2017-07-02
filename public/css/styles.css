@@ -130,3 +130,68 @@
 		transform:translateY(-100%);
 	}
 }
+
+@media(max-width: 992px){
+  .intro .action-box>div p{
+    font-size:23px;
+  }                    
+}
+@media (max-width: 767px) {
+  .intro h3 {
+    font-size: 22px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box {
+    margin: 10px auto;
+    padding: 25px 0px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box input.username {
+    font-size: 12px;
+    margin: 0 0 10px 0;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box .right {
+    padding-left: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box .right:before {
+    height: 35px;
+    width: 35px;
+    font-size: 15px;
+    top: 20px;
+    left: -17px;
+    line-height: 35px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box .left {
+    padding-right: 20px;
+  }
+}
+@media (max-width: 992px) {
+  .intro .action-box > div p {
+    font-size: 23px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box > div p {
+    font-size: 15px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box > div input {
+    font-size: 12px;
+  }
+}
+@media (max-width: 767px) {
+  .intro .action-box > div button {
+    margin: 10px auto 0;
+    font-size: 12px;
+    padding: 7px;
+  }
+}

@@ -143,7 +143,7 @@
 
             .instructions {
                 display: block;
-                width: 65%;
+                width: 55%;
                 float: left;
                 color: white;
                 padding: 0 5px;
@@ -154,6 +154,9 @@
                     border-bottom: 1px solid white;
                     text-align: center;
                     margin: 0 0 10px 0;
+                    @media(max-width: 767px){
+                        font-size:24px;
+                    }
                 }
                 ul {
                     list-style: none;
@@ -164,12 +167,15 @@
                         font-size: 18px;
                         margin-bottom: 10px;
                         text-shadow: 1px 1px 1px #313131;
+                        @media(max-width: 767px){
+                            font-size:14px;
+                        }
                     }
                 }
             }
             .joinedPlayers {
                 display: block;
-                width: 35%;
+                width: 45%;
                 float: left;
                 color: white;
 
@@ -179,6 +185,9 @@
                     border-bottom: 1px solid white;
                     text-align: center;
                     margin: 0 0 10px 0;
+                    @media(max-width: 767px){
+                        font-size:24px;
+                    }
                 }
                 ul {
                     list-style: none;
@@ -187,7 +196,7 @@
                     border: 1px solid black;
                     border-radius: 5px;
                     padding-bottom: 30px;
-                    min-width: 280px;
+                    
 
                     li {
                         list-style-type: none;
@@ -211,6 +220,12 @@
                             width: 50%;
                             font-size: 24px;
                             text-shadow: 1px 1px #313131;
+                            text-overflow: ellipsis;
+                            overflow:hidden;
+                            @media(max-width: 767px){
+                                width: 100%;
+                                font-size:20px;
+                            }
                         }
                         .userStatus {
                             float: left;
@@ -261,8 +276,16 @@
                 clear: both;
 
                 button {
-                    font-size: 24px;
-                    margin: 0 20px;
+                    font-size: 23px;
+                    margin: 0 2px;
+                    padding: 6px 10px;
+                    @media(max-width: 991px){
+                        margin: 0px 20px;
+                    }
+                    @media(max-width: 767px){
+                        margin: 0px 5px;
+                        font-size: 18px;
+                    }
                 }
                 #startGame {display: none; }
 
@@ -367,6 +390,10 @@
     -moz-animation: loading_dots .8s linear infinite;
     -ms-animation: loading_dots .8s linear infinite;
     animation: loading_dots .8s linear infinite;
+    @media(max-width: 767px){
+        height: .3em;
+    width: .3em;
+    }
 }
   .loading_dots span:nth-child(2) {
     -webkit-animation-delay:  0.2s;
