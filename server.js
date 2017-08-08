@@ -10,16 +10,18 @@ var server = app.listen(8000,function(){
 
 });
 
+// ==== decks ===== //
+var decks = require('./pubic/js/decks.js');
 
 // ==== socket.io ====
 // https://github.com/socketio/socket.io/blob/master/docs/README.md
 var io = require('socket.io').listen(server);
 var chatHistory = '';
 const decks = {
-	animal: ['a','b','c','d','e'],
-	event: ['f','g','h','i','j'],
-	name: ['karina','allan','trevor'],
-	place: ['oregon','washington','california']
+	animal: decks.animals,
+	cartoons: decks.cartoons,
+	places: decks.places,
+	movies: decks.movies
 }
 const currentRooms = {
 	currentRooms : [],
